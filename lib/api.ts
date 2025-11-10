@@ -22,6 +22,11 @@ async function getPublishableApiKey(): Promise<string> {
 
     const data = await response.json()
     publishableApiKey = data.publishable_key
+
+    if (!publishableApiKey) {
+      throw new Error('Publishable API key is missing from response')
+    }
+
     return publishableApiKey
   } catch (error) {
     console.error('Error fetching publishable API key:', error)
