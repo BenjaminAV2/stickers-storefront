@@ -1,8 +1,13 @@
+'use client'
+
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
 
 export default function Header() {
+  const { totalItems } = useCart();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
@@ -41,9 +46,11 @@ export default function Header() {
           aria-label="Panier"
         >
           <ShoppingCart className="h-5 w-5 text-[var(--color-brand-violet)]" />
-          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-brand-orange)] text-xs font-bold text-white">
-            0
-          </span>
+          {totalItems > 0 && (
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-brand-orange)] text-xs font-bold text-white">
+              {totalItems > 99 ? '99+' : totalItems}
+            </span>
+          )}
         </Link>
       </div>
     </header>

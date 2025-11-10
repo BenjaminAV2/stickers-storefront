@@ -96,3 +96,11 @@ export interface Cart {
 }
 
 export type FilterType = 'support' | 'forme' | 'taille';
+
+// Product Configuration for Cart
+export interface ProductConfiguration {
+  size: string; // e.g., "5x5", "8x8", "10x10", "15x15"
+  support: string; // e.g., "vinyle-blanc", "vinyle-transparent", etc.
+  shape: string; // e.g., "cut-contour", "carre", "rectangle", "rond"
+  quantity: number; // Number of stickers
+}
