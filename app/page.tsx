@@ -120,7 +120,7 @@ export default async function Home() {
                 {products.map((product) => (
                   <Link
                     key={product.id}
-                    href={`/products/${product.id}`}
+                    href={`/products/${product.handle}`}
                     className="card-glossy group cursor-pointer"
                   >
                     <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">

@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { Product } from '@/lib/types'
-import { SupportType, ShapeType, computeMatrix, PriceMatrixRow, formatEur } from '@/lib/pricing'
+import { SupportType, ShapeType, computeMatrix, computeCustomQuantityPrice, PriceMatrixRow, formatEur } from '@/lib/pricing'
 import SupportShapePicker from './SupportShapePicker'
 import SizePicker from './SizePicker'
 import QuantityMatrix from './QuantityMatrix'
@@ -25,7 +25,8 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
     diameterCm: 5,
     valid: true,
   })
-  const [selectedQ, setSelectedQ] = useState(5)
+  const [selectedQ, setSelectedQ] = useState(30)
+  const [customQuantityRow, setCustomQuantityRow] = useState<PriceMatrixRow | null>(null)
 
   // Compute price matrix whenever config changes
   const priceMatrix: PriceMatrixRow[] = size.valid
@@ -53,8 +54,27 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
     []
   )
 
+  const handleCustomQuantityChange = useCallback(
+    (customQ: number) => {
+      const customRow = computeCustomQuantityPrice(
+        {
+          support,
+          shape,
+          widthCm: size.widthCm,
+          heightCm: size.heightCm,
+          diameterCm: size.diameterCm,
+        },
+        customQ
+      )
+      setCustomQuantityRow(customRow)
+      setSelectedQ(customQ)
+    },
+    [support, shape, size]
+  )
+
   const handleAddToCart = () => {
-    const selectedRow = priceMatrix.find((row) => row.q === selectedQ)
+    // Use custom quantity row if it exists and quantity matches, otherwise use preset
+    const selectedRow = customQuantityRow || priceMatrix.find((row) => row.q === selectedQ)
     if (!selectedRow) return
 
     addItem({
@@ -125,7 +145,9 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
           <QuantityMatrix
             rows={priceMatrix}
             selectedQ={selectedQ}
+            customQuantityRow={customQuantityRow}
             onSelect={setSelectedQ}
+            onCustomQuantityChange={handleCustomQuantityChange}
           />
         </div>
       )}

@@ -21,7 +21,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const variantCount = product.variants?.length || 0;
 
   return (
-    <Link href={`/products/${product.id}`} className="group block">
+    <Link href={`/products/${product.handle}`} className="group block">
       <div className="overflow-hidden rounded-lg border bg-white transition-all duration-300 hover:shadow-[var(--shadow-card-hover)]" style={{ boxShadow: 'var(--shadow-card)' }}>
         <div className="p-0">
           {/* Image Container - Ratio 1:1 */}
