@@ -18,7 +18,7 @@ Système de checkout complet et configurable pour Next.js 16 avec Medusa v2, Pay
 ```
 ├── app/
 │   ├── api/
-│   │   └── shipping-providers/
+│   │   └── shipping-providers-filtered/
 │   │       └── route.ts                # API pour récupérer les transporteurs filtrés
 │   └── (frontend)/
 │       └── checkout/
@@ -236,7 +236,7 @@ const STEPS = [
 
 ## 🔌 API
 
-### GET /api/shipping-providers
+### GET /api/shipping-providers-filtered
 
 Récupère les transporteurs filtrés par pays et code postal.
 
@@ -247,7 +247,7 @@ Récupère les transporteurs filtrés par pays et code postal.
 
 **Exemple :**
 ```bash
-curl "http://localhost:3000/api/shipping-providers?country=FR&postal_code=75001"
+curl "http://localhost:3000/api/shipping-providers-filtered?country=FR&postal_code=75001"
 ```
 
 **Réponse :**

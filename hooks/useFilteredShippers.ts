@@ -38,7 +38,7 @@ export function useFilteredShippers(
         params.append('postal_code', postalCode)
       }
 
-      const response = await fetch(`/api/shipping-providers?${params.toString()}`)
+      const response = await fetch(`/api/shipping-providers-filtered?${params.toString()}`)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
