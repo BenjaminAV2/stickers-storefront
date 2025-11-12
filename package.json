@@ -6,14 +6,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync:orders": "tsx scripts/sync-medusa-orders.ts",
+    "generate:payload-types": "payload generate:types"
   },
   "dependencies": {
+    "@payloadcms/db-mongodb": "^3.63.0",
+    "@payloadcms/next": "^3.63.0",
+    "@payloadcms/richtext-lexical": "^3.63.0",
     "lucide-react": "^0.553.0",
     "next": "16.0.1",
+    "payload": "^3.63.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "react-hot-toast": "^2.6.0"
+    "react-hot-toast": "^2.6.0",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -23,6 +30,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }
