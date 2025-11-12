@@ -11,6 +11,7 @@ import { Pages } from './payload/collections/Pages'
 import { Media } from './payload/collections/Media'
 import { PricingSettings } from './payload/collections/PricingSettings'
 import { Orders } from './payload/collections/Orders'
+import { ShippingProviders } from './payload/collections/ShippingProviders'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -26,7 +27,7 @@ export default buildConfig({
     },
   },
 
-  collections: [Users, Pages, Media, PricingSettings, Orders],
+  collections: [Users, Pages, Media, PricingSettings, Orders, ShippingProviders],
 
   editor: lexicalEditor(),
 

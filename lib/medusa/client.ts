@@ -91,6 +91,33 @@ export class MedusaClient {
     const query = queryParams.toString()
     return this.get(`/admin/orders${query ? `?${query}` : ''}`)
   }
+
+  /**
+   * Checkout / Cart methods for storefront
+   */
+  async createCart(data?: unknown) {
+    return this.post('/store/carts', data || {})
+  }
+
+  async updateCart(cartId: string, data: unknown) {
+    return this.post(`/store/carts/${cartId}`, data)
+  }
+
+  async addShippingMethod(cartId: string, data: { option_id: string }) {
+    return this.post(`/store/carts/${cartId}/shipping-methods`, data)
+  }
+
+  async createPaymentSessions(cartId: string) {
+    return this.post(`/store/carts/${cartId}/payment-sessions`, {})
+  }
+
+  async setPaymentSession(cartId: string, data: { provider_id: string }) {
+    return this.post(`/store/carts/${cartId}/payment-session`, data)
+  }
+
+  async completeCart(cartId: string) {
+    return this.post(`/store/carts/${cartId}/complete`, {})
+  }
 }
 
 // Instance singleton du client Medusa
