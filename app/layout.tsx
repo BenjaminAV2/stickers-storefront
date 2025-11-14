@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   keywords: "stickers personnalisés, autocollants, vinyle, holographique, impression stickers, stickers professionnels",
   icons: {
     icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
   },
   openGraph: {
     title: "Exclusives Stickers | Stickers Personnalisés Premium",

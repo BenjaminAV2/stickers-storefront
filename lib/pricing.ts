@@ -10,6 +10,7 @@ const SUPPORT_MULTIPLIERS = {
 
 const SHAPE_MULTIPLIERS = {
   carre_rectangle: 1,
+  carre_rectangle_bords_arrondis: 1.02,
   rond: 1.05,
   cut_contour: 1.1,
 }
@@ -31,6 +32,19 @@ const DISCOUNTS = {
 // Predefined sizes for each shape type
 export const PREDEFINED_SIZES = {
   carre_rectangle: [
+    { widthCm: 2, heightCm: 2, label: '2×2 cm' },
+    { widthCm: 5, heightCm: 5, label: '5×5 cm' },
+    { widthCm: 8, heightCm: 8, label: '8×8 cm' },
+    { widthCm: 10, heightCm: 10, label: '10×10 cm' },
+    { widthCm: 15, heightCm: 15, label: '15×15 cm' },
+    { widthCm: 20, heightCm: 20, label: '20×20 cm' },
+    { widthCm: 30, heightCm: 30, label: '30×30 cm' },
+    { widthCm: 40, heightCm: 40, label: '40×40 cm' },
+    { widthCm: 50, heightCm: 50, label: '50×50 cm' },
+    { widthCm: 80, heightCm: 80, label: '80×80 cm' },
+    { widthCm: 100, heightCm: 100, label: '100×100 cm' },
+  ],
+  carre_rectangle_bords_arrondis: [
     { widthCm: 2, heightCm: 2, label: '2×2 cm' },
     { widthCm: 5, heightCm: 5, label: '5×5 cm' },
     { widthCm: 8, heightCm: 8, label: '8×8 cm' },

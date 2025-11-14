@@ -52,6 +52,13 @@ const SHAPE_OPTIONS = [
     bgGradient: 'from-blue-50 to-indigo-50',
   },
   {
+    value: 'carre_rectangle_bords_arrondis' as const,
+    label: 'Carré / Rectangle Bord arrondis',
+    description: 'Angles arrondis élégants',
+    icon: '▢',
+    bgGradient: 'from-cyan-50 to-blue-50',
+  },
+  {
     value: 'rond' as const,
     label: 'Rond',
     description: 'Forme circulaire',
@@ -131,7 +138,7 @@ export default function SupportShapePicker({
         <label className="block text-sm font-semibold text-gray-700 mb-3">
           Forme
         </label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {SHAPE_OPTIONS.map((option) => {
             const isSelected = shape === option.value
             return (

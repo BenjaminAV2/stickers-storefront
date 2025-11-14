@@ -17,6 +17,16 @@ module.exports = {
           accent: '#FEA501',
           highlight: '#2BC8F2',
           black: '#000000',
+          blue: '#3B82F6',
+          'blue-dark': '#1E40AF',
+        },
+        yellow: {
+          cta: '#FBBF24',
+          bright: '#FCD34D',
+        },
+        dark: {
+          DEFAULT: '#1F2937',
+          darker: '#111827',
         },
         glossy: {
           50: '#fef7ee',

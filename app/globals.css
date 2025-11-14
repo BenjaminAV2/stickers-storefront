@@ -3,11 +3,18 @@
 :root {
   --radius: 0.625rem;
 
-  /* Exclusives Stickers Brand Colors */
+  /* Exclusives Stickers Brand Colors - Updated from Design */
   --color-brand-violet: #4F39D7;
   --color-brand-orange: #FEA501;
   --color-brand-highlight: #2BC8F2;
-  --color-brand-yellow-cta: #F9D94C;
+  --color-brand-yellow-cta: #FBBF24;
+
+  /* New colors from PDF design */
+  --color-primary-blue: #3B82F6;
+  --color-primary-blue-dark: #1E40AF;
+  --color-yellow-bright: #FCD34D;
+  --color-dark-bg: #1F2937;
+  --color-dark-bg-darker: #111827;
 
   /* Glossy Effects */
   --shadow-glossy: 0 8px 32px rgba(79, 57, 215, 0.37);
