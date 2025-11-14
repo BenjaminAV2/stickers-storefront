@@ -83,8 +83,7 @@ export default function HeroStickerSection({
           className="absolute bottom-0 left-0 w-full h-auto block"
           style={{
             filter: 'drop-shadow(4px 6px 8px rgba(0, 0, 0, 0.3))',
-            zIndex: 20,
-            transform: 'translateY(-4px)'
+            zIndex: 20
           }}
         />
       </div>
@@ -103,11 +102,10 @@ export default function HeroStickerSection({
         <img
           src="/Vector_Hero_Bottom_Dektop_VF2.svg"
           alt=""
-          className="absolute bottom-0 left-0 w-full h-auto block"
+          className="absolute bottom-0 left-0 w-full h-auto block md:translate-y-0 lg:translate-y-[-4px]"
           style={{
             filter: 'drop-shadow(4px 6px 8px rgba(0, 0, 0, 0.3))',
-            zIndex: 20,
-            transform: 'translateY(-4px)'
+            zIndex: 20
           }}
         />
       </div>

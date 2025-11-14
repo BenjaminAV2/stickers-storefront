@@ -24,11 +24,11 @@ export default async function Home() {
       <HeroStickerSection />
 
       {/* Reassurance Section */}
-      <section id="reassurances" className="py-5 sm:py-6 bg-white border-b border-gray-100">
+      <section id="reassurances" className="pt-4 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
+          <div className="grid grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
             {/* Livraison Express */}
-            <div className="text-center p-4 rounded-xl hover:bg-gray-50 transition-colors">
+            <div className="text-center p-4 rounded-xl transition-transform hover:scale-110 hover:-translate-y-1 duration-300">
               <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 bg-gradient-to-br from-primary-blue to-blue-600 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-md">
                 ⚡
               </div>
@@ -37,7 +37,7 @@ export default async function Home() {
             </div>
 
             {/* Qualité certifiée */}
-            <div className="text-center p-4 rounded-xl hover:bg-gray-50 transition-colors">
+            <div className="text-center p-4 rounded-xl transition-transform hover:scale-110 hover:-translate-y-1 duration-300">
               <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-md">
                 ✓
               </div>
@@ -46,7 +46,7 @@ export default async function Home() {
             </div>
 
             {/* Large choix d'options */}
-            <div className="text-center p-4 rounded-xl hover:bg-gray-50 transition-colors">
+            <div className="text-center p-4 rounded-xl transition-transform hover:scale-110 hover:-translate-y-1 duration-300">
               <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-md">
                 🎨
               </div>
@@ -55,7 +55,7 @@ export default async function Home() {
             </div>
 
             {/* Made in France */}
-            <div className="text-center p-4 rounded-xl hover:bg-gray-50 transition-colors">
+            <div className="text-center p-4 rounded-xl transition-transform hover:scale-110 hover:-translate-y-1 duration-300">
               <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 bg-gradient-to-br from-blue-600 to-red-500 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-md">
                 🇫🇷
               </div>
@@ -64,7 +64,7 @@ export default async function Home() {
             </div>
 
             {/* Made to Measure */}
-            <div className="text-center p-4 rounded-xl hover:bg-gray-50 transition-colors">
+            <div className="text-center p-4 rounded-xl transition-transform hover:scale-110 hover:-translate-y-1 duration-300">
               <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-md">
                 📏
               </div>
@@ -73,7 +73,7 @@ export default async function Home() {
             </div>
 
             {/* Customer Service */}
-            <div className="text-center p-4 rounded-xl hover:bg-gray-50 transition-colors">
+            <div className="text-center p-4 rounded-xl transition-transform hover:scale-110 hover:-translate-y-1 duration-300">
               <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-md">
                 💬
               </div>
@@ -85,7 +85,7 @@ export default async function Home() {
       </section>
 
       {/* Products Grid Section */}
-      <section className="py-16 sm:py-20 lg:py-24 bg-gray-50">
+      <section className="py-16 sm:py-20 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
@@ -117,55 +117,51 @@ export default async function Home() {
                   <Link
                     key={product.id}
                     href={`/products/${product.handle}`}
-                    className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer overflow-hidden border border-gray-100"
+                    className="bg-black rounded-2xl transition-all duration-300 group cursor-pointer overflow-hidden border-[3px] border-white hover:shadow-[6px_6px_16px_rgba(0,0,0,0.4)]"
+                    style={{
+                      boxShadow: '4px 4px 12px rgba(0, 0, 0, 0.3)'
+                    }}
                   >
-                    <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
-                      {product.images && product.images.length > 0 ? (
-                        <Image
-                          src={product.images[0].url}
-                          alt={product.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="text-center p-8">
-                          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-primary-blue to-primary-blue-dark rounded-2xl flex items-center justify-center shadow-lg">
-                            <span className="text-3xl text-white">🎨</span>
-                          </div>
-                          <p className="text-sm text-gray-500 font-medium">Image à venir</p>
-                        </div>
-                      )}
+                    <div className="aspect-square bg-black flex items-center justify-center relative overflow-hidden p-6">
+                      <Image
+                        src="/product-placeholder.png"
+                        alt={product.title}
+                        fill
+                        className="object-contain group-hover:scale-105 transition-transform duration-500"
+                        quality={100}
+                        unoptimized
+                      />
                     </div>
-                    <div className="p-5">
-                      <h3 className="font-bold text-base sm:text-lg text-gray-900 mb-2 group-hover:text-primary-blue transition-colors line-clamp-1">
+                    <div className="p-4 bg-black">
+                      <h3 className="font-bold text-base sm:text-lg text-white mb-1.5 group-hover:text-[#2B9FE0] transition-colors line-clamp-1">
                         {product.title}
                       </h3>
                       {product.description && (
-                        <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                        <p className="text-sm text-gray-300 mb-3 line-clamp-2 leading-relaxed">
                           {product.description}
                         </p>
                       )}
                       <div className="flex items-center justify-between">
                         {product.variants && product.variants.length > 0 ? (
                           <div>
-                            <p className="text-xs text-gray-500 mb-1">À partir de</p>
-                            <p className="text-xl sm:text-2xl font-bold text-gray-900">
+                            <p className="text-xs text-gray-400 mb-0.5">À partir de</p>
+                            <p className="text-lg sm:text-xl font-bold text-white">
                               {product.variants[0].prices?.[0]?.amount
                                 ? `${(product.variants[0].prices[0].amount / 100).toFixed(2)}€`
                                 : 'Prix sur demande'}
                             </p>
                           </div>
                         ) : (
-                          <p className="text-sm text-gray-500">Contactez-nous</p>
+                          <p className="text-sm text-gray-400">Contactez-nous</p>
                         )}
-                        <div className="text-primary-blue group-hover:translate-x-1 transition-transform">
+                        <div className="text-white group-hover:translate-x-1 transition-transform">
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                           </svg>
                         </div>
                       </div>
                       {product.variants && product.variants.length > 1 && (
-                        <p className="text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
+                        <p className="text-xs text-gray-400 mt-2 pt-2 border-t border-gray-800">
                           {product.variants.length} tailles disponibles
                         </p>
                       )}
