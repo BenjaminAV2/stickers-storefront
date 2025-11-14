@@ -24,7 +24,7 @@ export default async function Home() {
       <HeroStickerSection />
 
       {/* Reassurance Section */}
-      <section id="reassurances" className="py-10 sm:py-12 bg-white border-b border-gray-100">
+      <section id="reassurances" className="py-5 sm:py-6 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
             {/* Livraison Express */}

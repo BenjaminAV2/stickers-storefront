@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart, Menu, X } from "lucide-react";
+import { ShoppingCart, Menu, X, User } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useState } from "react";
 
@@ -29,27 +29,48 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-8">
           <Link
             href="/"
-            className="text-sm font-medium text-gray-700 transition-colors hover:text-primary-blue"
+            className="text-lg font-bold transition-colors hover:opacity-80"
+            style={{ color: '#2B9FE0' }}
           >
             Accueil
           </Link>
           <Link
             href="/products"
-            className="text-sm font-medium text-gray-700 transition-colors hover:text-primary-blue"
+            className="text-lg font-bold transition-colors hover:opacity-80"
+            style={{ color: '#2B9FE0' }}
           >
             Produits
           </Link>
         </nav>
 
-        {/* Right Side: Cart + Mobile Menu */}
+        {/* Right Side: Account + Cart + Mobile Menu */}
         <div className="flex items-center gap-3">
+          {/* Account */}
+          <Link
+            href="/account"
+            className="relative rounded-full p-2 transition-all active:scale-95"
+            style={{
+              backgroundColor: 'transparent'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F9D94C'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            aria-label="Mon compte"
+          >
+            <User className="h-5 w-5" style={{ color: '#2B9FE0', strokeWidth: 2.5 }} />
+          </Link>
+
           {/* Cart */}
           <Link
             href="/cart"
-            className="relative rounded-full p-2 transition-all hover:bg-gray-100 active:scale-95"
+            className="relative rounded-full p-2 transition-all active:scale-95"
+            style={{
+              backgroundColor: 'transparent'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F9D94C'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             aria-label="Panier"
           >
-            <ShoppingCart className="h-5 w-5 text-gray-700" />
+            <ShoppingCart className="h-5 w-5" style={{ color: '#2B9FE0', strokeWidth: 2.5 }} />
             {totalItems > 0 && (
               <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-yellow-cta text-xs font-bold text-white shadow-md">
                 {totalItems > 99 ? '99+' : totalItems}

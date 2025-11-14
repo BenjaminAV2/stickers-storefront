@@ -51,7 +51,14 @@ export default function HeroStickerSection({
           {/* CTA Button - Yellow */}
           <Link
             href="/products"
-            className="inline-block px-8 py-4 bg-[#FBBF24] hover:bg-[#F59E0B] text-gray-900 font-bold text-base sm:text-lg rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+            className="inline-block px-10 py-4 font-bold text-base sm:text-lg transform hover:scale-105 transition-all duration-300"
+            style={{
+              backgroundColor: '#F9D94C',
+              color: '#1F2937',
+              borderRadius: '50px',
+              border: '2px solid white',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+            }}
           >
             CRÉER VOTRE AUTOCOLLANTS
           </Link>
