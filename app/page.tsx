@@ -4,6 +4,7 @@ import { getProducts } from '@/lib/api'
 import { Product } from '@/lib/types'
 import Footer from '@/components/Footer'
 import HeroStickerSection from '@/components/HeroStickerSection'
+import ExpandableContent from '@/components/ExpandableContent'
 
 export default async function Home() {
   // Fetch products from API
@@ -200,22 +201,87 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 sm:py-20 bg-gradient-to-r from-[#FEA501] via-[#2BC8F2] to-[#4F39D7">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-            Prêt à créer vos stickers personnalisés ?
-          </h2>
-          <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
-            Commandez dès maintenant et recevez vos stickers de qualité professionnelle en 48-72h
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/products" className="btn-secondary bg-white text-[#4F39D7] hover:bg-gray-50 border-0">
-              Commander maintenant
-            </Link>
+      {/* Video Section */}
+      <section className="py-16 sm:py-20 lg:py-24 bg-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            {/* Vidéo - à droite sur desktop */}
+            <div className="relative aspect-video bg-gray-900 rounded-2xl overflow-hidden lg:order-2">
+              <video
+                className="w-full h-full object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
+              >
+                <source src="/video-placeholder.mp4" type="video/mp4" />
+                Votre navigateur ne supporte pas la vidéo.
+              </video>
+            </div>
+
+            {/* Bloc texte - à gauche sur desktop */}
+            <div className="text-white lg:order-1">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+                Titre de la section
+              </h2>
+              <p className="text-xl sm:text-2xl text-gray-300 mb-6">
+                Sous-titre accrocheur
+              </p>
+              <p className="text-base sm:text-lg text-gray-400 leading-relaxed">
+                Contenu descriptif de la section. Expliquez ici les avantages de vos stickers personnalisés,
+                votre processus de fabrication, ou tout autre information importante pour vos clients.
+              </p>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* Sample Order Section */}
+      <section className="py-16 sm:py-20 lg:py-24 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-3xl shadow-lg overflow-hidden">
+            <div className="flex flex-col sm:flex-row items-center">
+              {/* Image à gauche */}
+              <div className="w-full sm:w-1/3 lg:w-1/4 aspect-square bg-white flex items-center justify-center relative p-6">
+                <Image
+                  src="/product-placeholder.png"
+                  alt="Échantillon de stickers"
+                  fill
+                  className="object-contain"
+                  quality={100}
+                  unoptimized
+                />
+              </div>
+
+              {/* Contenu à droite */}
+              <div className="w-full sm:w-2/3 lg:w-3/4 p-6 sm:p-8 text-center sm:text-left">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+                  Commandez un échantillon
+                </h2>
+                <p className="text-sm sm:text-base text-gray-600 mb-6 leading-relaxed">
+                  Testez la qualité de nos stickers avant de passer commande. Recevez un échantillon gratuit et découvrez nos différents matériaux et finitions.
+                </p>
+                <Link
+                  href="/products"
+                  className="inline-block px-8 py-3 font-bold text-sm sm:text-base transition-all duration-300 hover:scale-105"
+                  style={{
+                    backgroundColor: '#F9D94C',
+                    color: '#1F2937',
+                    borderRadius: '50px',
+                    border: '2px solid white',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                  }}
+                >
+                  Commander maintenant
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Expandable Content Section */}
+      <ExpandableContent />
 
       <Footer />
     </div>
