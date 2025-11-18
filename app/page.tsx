@@ -112,48 +112,68 @@ export default async function Home() {
 
           {!error && products.length > 0 && (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
-                {products.map((product) => (
-                  <Link
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+                {products.slice(0, 4).map((product) => (
+                  <div
                     key={product.id}
-                    href={`/products/${product.handle}`}
-                    className="bg-black rounded-2xl transition-all duration-300 group cursor-pointer overflow-hidden border-[3px] border-white hover:shadow-[6px_6px_16px_rgba(0,0,0,0.4)]"
+                    className="bg-black rounded-2xl transition-all duration-300 group overflow-hidden border-[3px] border-white hover:shadow-[6px_6px_16px_rgba(0,0,0,0.4)] relative"
                     style={{
                       boxShadow: '4px 4px 12px rgba(0, 0, 0, 0.3)'
                     }}
                   >
-                    <div className="aspect-square bg-black flex items-center justify-center relative overflow-hidden p-6">
-                      <Image
-                        src="/product-placeholder.png"
-                        alt={product.title}
-                        fill
-                        className="object-contain group-hover:scale-105 transition-transform duration-500"
-                        quality={100}
-                        unoptimized
-                      />
-                    </div>
-                    <div className="p-4 bg-black">
-                      <h3 className="font-bold text-base sm:text-lg text-white mb-1.5 group-hover:text-[#2B9FE0] transition-colors line-clamp-1">
-                        {product.title}
-                      </h3>
-                      {product.description && (
-                        <p className="text-sm text-gray-300 mb-3 line-clamp-2 leading-relaxed">
-                          {product.description}
-                        </p>
-                      )}
-                      <div className="flex items-center justify-between">
-                        {product.variants && product.variants.length > 0 ? (
-                          <div>
-                            <p className="text-xs text-gray-400 mb-0.5">À partir de</p>
-                            <p className="text-lg sm:text-xl font-bold text-white">
-                              {product.variants[0].prices?.[0]?.amount
-                                ? `${(product.variants[0].prices[0].amount / 100).toFixed(2)}€`
-                                : 'Prix sur demande'}
-                            </p>
-                          </div>
-                        ) : (
-                          <p className="text-sm text-gray-400">Contactez-nous</p>
+                    {/* Link wrapper - toute la carte cliquable sur mobile et desktop */}
+                    <Link
+                      href={`/products/${product.handle}`}
+                      className="absolute inset-0 z-10"
+                    />
+
+                    {/* Contenu principal - horizontal sur mobile, vertical sur desktop */}
+                    <div className="flex flex-row sm:flex-col">
+                      {/* Image - à gauche sur mobile, en haut sur desktop */}
+                      <div className="w-2/5 sm:w-full aspect-square bg-black flex items-center justify-center relative overflow-hidden p-4 sm:p-6">
+                        <Image
+                          src="/product-placeholder.png"
+                          alt={product.title}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          quality={100}
+                          unoptimized
+                        />
+                      </div>
+
+                      {/* Titre + texte - à droite sur mobile, en bas sur desktop */}
+                      <div className="w-3/5 sm:w-full p-3 sm:p-4 bg-black flex flex-col justify-center sm:justify-start">
+                        <h3 className="font-bold text-sm sm:text-base lg:text-lg text-white mb-1 sm:mb-1.5 group-hover:text-[#2B9FE0] transition-colors line-clamp-2 sm:line-clamp-1">
+                          {product.title}
+                        </h3>
+                        {product.description && (
+                          <p className="text-xs sm:text-sm text-gray-300 line-clamp-2 leading-relaxed mb-0 sm:mb-3">
+                            {product.description}
+                          </p>
                         )}
+                      </div>
+                    </div>
+
+                    {/* Lien visuel - en dessous sur mobile et desktop */}
+                    <div className="p-3 pt-0 sm:p-4 sm:pt-0 pointer-events-none">
+                      <div className="flex items-center justify-between">
+                        <div className="sm:hidden">
+                          <p className="text-sm text-gray-400">Créer mes stickers</p>
+                        </div>
+                        <div className="hidden sm:flex sm:w-full sm:justify-between">
+                          {product.variants && product.variants.length > 0 ? (
+                            <div>
+                              <p className="text-xs text-gray-400 mb-0.5">À partir de</p>
+                              <p className="text-lg sm:text-xl font-bold text-white">
+                                {product.variants[0].prices?.[0]?.amount
+                                  ? `${(product.variants[0].prices[0].amount / 100).toFixed(2)}€`
+                                  : 'Prix sur demande'}
+                              </p>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-gray-400">Créer mes stickers</p>
+                          )}
+                        </div>
                         <div className="text-white group-hover:translate-x-1 transition-transform">
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -161,12 +181,12 @@ export default async function Home() {
                         </div>
                       </div>
                       {product.variants && product.variants.length > 1 && (
-                        <p className="text-xs text-gray-400 mt-2 pt-2 border-t border-gray-800">
+                        <p className="hidden sm:block text-xs text-gray-400 mt-2 pt-2 border-t border-gray-800">
                           {product.variants.length} tailles disponibles
                         </p>
                       )}
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
 
