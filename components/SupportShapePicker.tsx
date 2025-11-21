@@ -13,7 +13,6 @@ const SUPPORT_OPTIONS = [
   {
     value: 'vinyle_blanc' as const,
     label: 'Vinyle Blanc',
-    description: 'Classique et polyvalent',
     bgGradient: 'from-white to-gray-50',
     borderColor: 'border-gray-300',
     image: '/Support_Blanc.svg',
@@ -21,7 +20,6 @@ const SUPPORT_OPTIONS = [
   {
     value: 'vinyle_transparent' as const,
     label: 'Vinyle Transparent',
-    description: 'Effet vitre élégant',
     bgGradient: 'from-blue-50 to-cyan-50',
     borderColor: 'border-cyan-300',
     image: '/Support_Trans.svg',
@@ -29,7 +27,6 @@ const SUPPORT_OPTIONS = [
   {
     value: 'vinyle_holographique' as const,
     label: 'Vinyle Holographique',
-    description: 'Brillant et irisé',
     bgGradient: 'from-purple-100 via-pink-100 to-blue-100',
     borderColor: 'border-purple-400',
     image: '/Support_Holographique.svg',
@@ -37,7 +34,6 @@ const SUPPORT_OPTIONS = [
   {
     value: 'vinyle_miroir' as const,
     label: 'Vinyle Miroir',
-    description: 'Effet chromé réfléchissant',
     bgGradient: 'from-gray-200 via-gray-100 to-gray-200',
     borderColor: 'border-gray-400',
     image: '/Support_Miroir.svg',
@@ -48,28 +44,24 @@ const SHAPE_OPTIONS = [
   {
     value: 'carre_rectangle' as const,
     label: 'Carré / Rectangle',
-    description: 'Formes géométriques simples',
     image: '/Forme_rectangle.svg',
     bgGradient: 'from-blue-50 to-indigo-50',
   },
   {
     value: 'carre_rectangle_bords_arrondis' as const,
-    label: 'Carré / Rectangle Bord arrondis',
-    description: 'Angles arrondis élégants',
+    label: 'Bords arrondis',
     image: '/Forme_Bord_Rond.svg',
     bgGradient: 'from-cyan-50 to-blue-50',
   },
   {
     value: 'rond' as const,
     label: 'Rond',
-    description: 'Forme circulaire',
     image: '/Forme_Rond.svg',
     bgGradient: 'from-purple-50 to-pink-50',
   },
   {
     value: 'cut_contour' as const,
     label: 'Découpe Contour',
-    description: 'Suit le contour du design',
     image: '/Forme_Die_cut.svg',
     bgGradient: 'from-orange-50 to-yellow-50',
   },
@@ -87,7 +79,8 @@ export default function SupportShapePicker({
         <label className="block text-sm font-semibold text-gray-700 mb-3">
           Support
         </label>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Mobile: horizontal scroll, Desktop: grid */}
+        <div className="flex md:grid md:grid-cols-4 gap-3 overflow-x-auto pb-2 md:pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
           {SUPPORT_OPTIONS.map((option) => {
             const isSelected = support === option.value
             return (
@@ -96,7 +89,8 @@ export default function SupportShapePicker({
                 type="button"
                 onClick={() => onChange({ support: option.value, shape })}
                 className={`
-                  relative p-4 rounded-lg border-2 transition-all duration-200
+                  relative p-3 rounded-lg border-2 transition-all duration-200 flex-shrink-0
+                  w-[100px] md:w-auto
                   bg-gradient-to-br ${option.bgGradient}
                   ${
                     isSelected
@@ -106,7 +100,7 @@ export default function SupportShapePicker({
                 `}
               >
                 {/* Image */}
-                <div className="w-16 h-16 mx-auto mb-2 relative">
+                <div className="w-12 h-12 mx-auto mb-1 relative">
                   <Image
                     src={option.image}
                     alt={option.label}
@@ -116,19 +110,14 @@ export default function SupportShapePicker({
                 </div>
 
                 {/* Label */}
-                <div className="text-sm font-semibold text-gray-900 text-center mb-1">
+                <div className="text-xs font-semibold text-gray-900 text-center leading-tight">
                   {option.label}
-                </div>
-
-                {/* Description */}
-                <div className="text-xs text-gray-600 text-center">
-                  {option.description}
                 </div>
 
                 {/* Selected indicator */}
                 {isSelected && (
-                  <div className="absolute top-2 right-2 w-5 h-5 bg-[#4F39D7] rounded-full flex items-center justify-center">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="absolute top-1 right-1 w-4 h-4 bg-[#4F39D7] rounded-full flex items-center justify-center">
+                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
@@ -144,7 +133,8 @@ export default function SupportShapePicker({
         <label className="block text-sm font-semibold text-gray-700 mb-3">
           Forme
         </label>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Mobile: horizontal scroll, Desktop: grid */}
+        <div className="flex md:grid md:grid-cols-4 gap-3 overflow-x-auto pb-2 md:pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
           {SHAPE_OPTIONS.map((option) => {
             const isSelected = shape === option.value
             return (
@@ -153,7 +143,8 @@ export default function SupportShapePicker({
                 type="button"
                 onClick={() => onChange({ support, shape: option.value })}
                 className={`
-                  relative p-4 rounded-lg border-2 transition-all duration-200
+                  relative p-3 rounded-lg border-2 transition-all duration-200 flex-shrink-0
+                  w-[100px] md:w-auto
                   bg-gradient-to-br ${option.bgGradient}
                   ${
                     isSelected
@@ -163,7 +154,7 @@ export default function SupportShapePicker({
                 `}
               >
                 {/* Image */}
-                <div className="w-16 h-16 mx-auto mb-2 relative">
+                <div className="w-12 h-12 mx-auto mb-1 relative">
                   <Image
                     src={option.image}
                     alt={option.label}
@@ -173,19 +164,14 @@ export default function SupportShapePicker({
                 </div>
 
                 {/* Label */}
-                <div className="text-sm font-semibold text-gray-900 text-center mb-1">
+                <div className="text-xs font-semibold text-gray-900 text-center leading-tight">
                   {option.label}
-                </div>
-
-                {/* Description */}
-                <div className="text-xs text-gray-600 text-center">
-                  {option.description}
                 </div>
 
                 {/* Selected indicator */}
                 {isSelected && (
-                  <div className="absolute top-2 right-2 w-5 h-5 bg-[#4F39D7] rounded-full flex items-center justify-center">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="absolute top-1 right-1 w-4 h-4 bg-[#4F39D7] rounded-full flex items-center justify-center">
+                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
