@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 
 interface ProductImageSliderProps {
@@ -10,40 +10,62 @@ interface ProductImageSliderProps {
 
 export default function ProductImageSlider({ images, productTitle }: ProductImageSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
+
+  const changeSlide = (newIndex: number) => {
+    if (isAnimating || newIndex === currentIndex) return
+    setIsAnimating(true)
+    setCurrentIndex(newIndex)
+  }
+
+  useEffect(() => {
+    if (isAnimating) {
+      const timer = setTimeout(() => setIsAnimating(false), 300)
+      return () => clearTimeout(timer)
+    }
+  }, [isAnimating])
 
   const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+    const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1
+    changeSlide(newIndex)
   }
 
   const goToNext = () => {
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+    const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1
+    changeSlide(newIndex)
   }
 
   const goToSlide = (index: number) => {
-    setCurrentIndex(index)
+    changeSlide(index)
   }
 
   return (
     <div className="bg-white rounded-lg shadow-[var(--shadow-card)] p-4 sm:p-6">
       {/* Main image */}
       <div className="aspect-square relative bg-black rounded-lg overflow-hidden">
-        <Image
-          src={images[currentIndex]}
-          alt={`${productTitle} - Image ${currentIndex + 1}`}
-          fill
-          className="object-contain"
-          sizes="(max-width: 768px) 100vw, 50vw"
-          priority
-          quality={100}
-          unoptimized
-        />
+        <div
+          className={`absolute inset-0 transition-opacity duration-300 ease-in-out ${
+            isAnimating ? 'opacity-0' : 'opacity-100'
+          }`}
+        >
+          <Image
+            src={images[currentIndex]}
+            alt={`${productTitle} - Image ${currentIndex + 1}`}
+            fill
+            className="object-contain"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority
+            quality={100}
+            unoptimized
+          />
+        </div>
 
         {/* Navigation arrows */}
         {images.length > 1 && (
           <>
             <button
               onClick={goToPrevious}
-              className="absolute left-1 top-1/2 -translate-y-1/2 p-1 transition-all hover:scale-110"
+              className="absolute left-1 top-1/2 -translate-y-1/2 p-1 transition-all hover:scale-110 z-10"
               aria-label="Image précédente"
             >
               <svg className="w-8 h-8 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
@@ -52,7 +74,7 @@ export default function ProductImageSlider({ images, productTitle }: ProductImag
             </button>
             <button
               onClick={goToNext}
-              className="absolute right-1 top-1/2 -translate-y-1/2 p-1 transition-all hover:scale-110"
+              className="absolute right-1 top-1/2 -translate-y-1/2 p-1 transition-all hover:scale-110 z-10"
               aria-label="Image suivante"
             >
               <svg className="w-8 h-8 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
@@ -70,9 +92,9 @@ export default function ProductImageSlider({ images, productTitle }: ProductImag
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+              className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                 index === currentIndex
-                  ? 'border-[#4F39D7] shadow-md'
+                  ? 'border-[#4F39D7] shadow-md scale-105'
                   : 'border-gray-200 hover:border-gray-400'
               }`}
               aria-label={`Voir image ${index + 1}`}
