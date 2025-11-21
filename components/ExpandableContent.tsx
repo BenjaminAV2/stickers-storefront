@@ -57,14 +57,7 @@ export default function ExpandableContent() {
           <div className="text-center mt-8">
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="inline-block px-8 py-3 font-bold text-sm sm:text-base transition-all duration-300 hover:scale-105"
-              style={{
-                backgroundColor: '#F9D94C',
-                color: '#1F2937',
-                borderRadius: '50px',
-                border: '2px solid white',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
-              }}
+              className="btn-primary"
             >
               {isExpanded ? 'Lire moins' : 'Lire plus'}
             </button>
