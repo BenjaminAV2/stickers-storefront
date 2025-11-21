@@ -80,7 +80,7 @@ export default function SupportShapePicker({
           Support
         </label>
         {/* Mobile: horizontal scroll, Desktop: grid */}
-        <div className="flex md:grid md:grid-cols-4 gap-3 overflow-x-auto overflow-y-visible py-2 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+        <div className="flex md:grid md:grid-cols-4 gap-3 overflow-x-auto overflow-visible p-2 -m-2 scrollbar-hide">
           {SUPPORT_OPTIONS.map((option) => {
             const isSelected = support === option.value
             return (
@@ -134,7 +134,7 @@ export default function SupportShapePicker({
           Forme
         </label>
         {/* Mobile: horizontal scroll, Desktop: grid */}
-        <div className="flex md:grid md:grid-cols-4 gap-3 overflow-x-auto overflow-y-visible py-2 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+        <div className="flex md:grid md:grid-cols-4 gap-3 overflow-x-auto overflow-visible p-2 -m-2 scrollbar-hide">
           {SHAPE_OPTIONS.map((option) => {
             const isSelected = shape === option.value
             return (
