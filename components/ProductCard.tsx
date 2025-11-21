@@ -7,10 +7,8 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  // Get the first image or use a placeholder
-  const imageUrl = product.images && product.images.length > 0
-    ? product.images[0].url
-    : product.thumbnail || '/placeholder.jpg';
+  // Always use the local product placeholder image
+  const imageUrl = '/product-placeholder.png';
 
   // Get the price from the first variant
   const price = product.variants && product.variants.length > 0 && product.variants[0].prices && product.variants[0].prices.length > 0
