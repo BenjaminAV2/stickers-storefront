@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { SupportType, ShapeType } from '@/lib/pricing'
 
 interface SupportShapePickerProps {
@@ -15,7 +16,7 @@ const SUPPORT_OPTIONS = [
     description: 'Classique et polyvalent',
     bgGradient: 'from-white to-gray-50',
     borderColor: 'border-gray-300',
-    icon: '⚪',
+    image: '/Support_Blanc.svg',
   },
   {
     value: 'vinyle_transparent' as const,
@@ -23,7 +24,7 @@ const SUPPORT_OPTIONS = [
     description: 'Effet vitre élégant',
     bgGradient: 'from-blue-50 to-cyan-50',
     borderColor: 'border-cyan-300',
-    icon: '💎',
+    image: '/Support_Trans.svg',
   },
   {
     value: 'vinyle_holographique' as const,
@@ -31,7 +32,7 @@ const SUPPORT_OPTIONS = [
     description: 'Brillant et irisé',
     bgGradient: 'from-purple-100 via-pink-100 to-blue-100',
     borderColor: 'border-purple-400',
-    icon: '✨',
+    image: '/Support_Holographique.svg',
   },
   {
     value: 'vinyle_miroir' as const,
@@ -39,7 +40,7 @@ const SUPPORT_OPTIONS = [
     description: 'Effet chromé réfléchissant',
     bgGradient: 'from-gray-200 via-gray-100 to-gray-200',
     borderColor: 'border-gray-400',
-    icon: '🪞',
+    image: '/Support_Miroir.svg',
   },
 ]
 
@@ -104,9 +105,14 @@ export default function SupportShapePicker({
                   }
                 `}
               >
-                {/* Icon */}
-                <div className="text-3xl mb-2 text-center">
-                  {option.icon}
+                {/* Image */}
+                <div className="w-16 h-16 mx-auto mb-2 relative">
+                  <Image
+                    src={option.image}
+                    alt={option.label}
+                    fill
+                    className="object-contain"
+                  />
                 </div>
 
                 {/* Label */}
