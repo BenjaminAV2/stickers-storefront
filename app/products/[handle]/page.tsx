@@ -64,8 +64,8 @@ export default async function ProductPage({
     notFound()
   }
 
-  // Always use the local product placeholder image
-  const productImages = ['/product-placeholder.png']
+  // Use local product placeholder images (duplicated for slider testing)
+  const productImages = ['/product-placeholder.png', '/product-placeholder.png']
 
   const variantCount = product.variants?.length || 0
 
