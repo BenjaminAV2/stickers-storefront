@@ -24,24 +24,13 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="p-0">
           {/* Image Container - Ratio 1:1 */}
           <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-            {imageUrl !== '/placeholder.jpg' ? (
-              <Image
-                src={imageUrl}
-                alt={product.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center">
-                <div className="text-center">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-[#FEA501] via-[#2BC8F2] to-[#4F39D7] rounded-full flex items-center justify-center shadow-[0_8px_32px_0_rgba(79,57,215,0.37)]">
-                    <span className="text-3xl text-white">🎨</span>
-                  </div>
-                  <p className="text-sm text-gray-500 font-medium">Image à venir</p>
-                </div>
-              </div>
-            )}
+            <Image
+              src={imageUrl}
+              alt={product.title}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            />
             {/* Glossy Overlay on Hover */}
             <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/0 to-white/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           </div>
