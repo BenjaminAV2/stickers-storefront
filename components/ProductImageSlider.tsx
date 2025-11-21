@@ -43,7 +43,7 @@ export default function ProductImageSlider({ images, productTitle }: ProductImag
           <>
             <button
               onClick={goToPrevious}
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-2 transition-all hover:scale-110"
+              className="absolute left-1 top-1/2 -translate-y-1/2 p-1 transition-all hover:scale-110"
               aria-label="Image précédente"
             >
               <svg className="w-8 h-8 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
@@ -52,7 +52,7 @@ export default function ProductImageSlider({ images, productTitle }: ProductImag
             </button>
             <button
               onClick={goToNext}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-2 transition-all hover:scale-110"
+              className="absolute right-1 top-1/2 -translate-y-1/2 p-1 transition-all hover:scale-110"
               aria-label="Image suivante"
             >
               <svg className="w-8 h-8 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
