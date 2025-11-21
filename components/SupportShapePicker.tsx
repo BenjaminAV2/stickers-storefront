@@ -80,7 +80,7 @@ export default function SupportShapePicker({
           Support
         </label>
         {/* Mobile: horizontal scroll, Desktop: grid */}
-        <div className="flex md:grid md:grid-cols-4 gap-3 overflow-x-auto pb-2 md:pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+        <div className="flex md:grid md:grid-cols-4 gap-3 overflow-x-auto overflow-y-visible py-2 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
           {SUPPORT_OPTIONS.map((option) => {
             const isSelected = support === option.value
             return (
@@ -94,7 +94,7 @@ export default function SupportShapePicker({
                   bg-gradient-to-br ${option.bgGradient}
                   ${
                     isSelected
-                      ? `${option.borderColor} ring-2 ring-offset-2 ring-[#4F39D7] shadow-lg scale-105`
+                      ? `${option.borderColor} ring-2 ring-offset-2 ring-[#4F39D7] shadow-lg`
                       : 'border-gray-200 hover:border-[#4F39D7] hover:shadow-md'
                   }
                 `}
@@ -134,7 +134,7 @@ export default function SupportShapePicker({
           Forme
         </label>
         {/* Mobile: horizontal scroll, Desktop: grid */}
-        <div className="flex md:grid md:grid-cols-4 gap-3 overflow-x-auto pb-2 md:pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+        <div className="flex md:grid md:grid-cols-4 gap-3 overflow-x-auto overflow-y-visible py-2 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
           {SHAPE_OPTIONS.map((option) => {
             const isSelected = shape === option.value
             return (
@@ -148,7 +148,7 @@ export default function SupportShapePicker({
                   bg-gradient-to-br ${option.bgGradient}
                   ${
                     isSelected
-                      ? 'border-[#4F39D7] ring-2 ring-offset-2 ring-[#4F39D7] shadow-lg scale-105'
+                      ? 'border-[#4F39D7] ring-2 ring-offset-2 ring-[#4F39D7] shadow-lg'
                       : 'border-gray-200 hover:border-[#4F39D7] hover:shadow-md'
                   }
                 `}
