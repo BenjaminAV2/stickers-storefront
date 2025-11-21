@@ -49,28 +49,28 @@ const SHAPE_OPTIONS = [
     value: 'carre_rectangle' as const,
     label: 'Carré / Rectangle',
     description: 'Formes géométriques simples',
-    icon: '⬜',
+    image: '/Forme_rectangle.svg',
     bgGradient: 'from-blue-50 to-indigo-50',
   },
   {
     value: 'carre_rectangle_bords_arrondis' as const,
     label: 'Carré / Rectangle Bord arrondis',
     description: 'Angles arrondis élégants',
-    icon: '▢',
+    image: '/Forme_Bord_Rond.svg',
     bgGradient: 'from-cyan-50 to-blue-50',
   },
   {
     value: 'rond' as const,
     label: 'Rond',
     description: 'Forme circulaire',
-    icon: '⚫',
+    image: '/Forme_Rond.svg',
     bgGradient: 'from-purple-50 to-pink-50',
   },
   {
     value: 'cut_contour' as const,
     label: 'Découpe Contour',
     description: 'Suit le contour du design',
-    icon: '✂️',
+    image: '/Forme_Die_cut.svg',
     bgGradient: 'from-orange-50 to-yellow-50',
   },
 ]
@@ -162,9 +162,14 @@ export default function SupportShapePicker({
                   }
                 `}
               >
-                {/* Icon */}
-                <div className="text-3xl mb-2 text-center">
-                  {option.icon}
+                {/* Image */}
+                <div className="w-16 h-16 mx-auto mb-2 relative">
+                  <Image
+                    src={option.image}
+                    alt={option.label}
+                    fill
+                    className="object-contain"
+                  />
                 </div>
 
                 {/* Label */}
