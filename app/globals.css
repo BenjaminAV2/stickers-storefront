@@ -153,12 +153,12 @@ select {
 select option {
   padding: 12px 16px;
   font-weight: 500;
-  background-color: white;
+  background-color: #EFF6FF;
   color: #111827;
 }
 
 select option:hover {
-  background-color: #F3F4F6;
+  background-color: #DBEAFE;
 }
 
 select option:checked {
