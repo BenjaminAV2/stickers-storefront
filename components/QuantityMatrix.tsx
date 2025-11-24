@@ -44,7 +44,7 @@ export default function QuantityMatrix({
 
   return (
     <div className="bg-white rounded-lg shadow-[var(--shadow-card)] overflow-hidden">
-      <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+      <div className="px-4 py-3 bg-blue-50 border-b border-blue-100">
         <h3 className="font-semibold text-gray-900">Tarifs dégressifs</h3>
         <p className="text-xs text-gray-500 mt-1">
           Cliquez sur une ligne pour sélectionner la quantité
@@ -52,7 +52,7 @@ export default function QuantityMatrix({
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-blue-50 border-b border-blue-100">
             <tr>
               <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">
                 Quantité
@@ -112,7 +112,7 @@ export default function QuantityMatrix({
             <tr
               className={`
                 border-b border-gray-100 transition-colors
-                ${isCustomSelected && customQuantityRow ? 'bg-[#FEA501] text-white' : 'bg-gray-50'}
+                ${isCustomSelected && customQuantityRow ? 'bg-[#FEA501] text-white' : 'bg-blue-50'}
               `}
             >
               <td className="px-4 py-3">
