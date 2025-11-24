@@ -100,8 +100,8 @@ export default function SizePicker({ shape, onChange }: SizePickerProps) {
 
   return (
     <div className="space-y-4">
-      {/* Mobile: Dropdown select */}
-      <div className="block md:hidden">
+      {/* Unified dropdown select for both mobile and desktop */}
+      <div className="relative">
         <select
           value={isCustomSize ? 'custom' : selectedPreset}
           onChange={(e) => {
@@ -112,55 +112,21 @@ export default function SizePicker({ shape, onChange }: SizePickerProps) {
               handlePresetClick(parseInt(value))
             }
           }}
-          className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-[#4F39D7] focus:outline-none text-sm font-medium bg-white"
+          className="w-full px-4 py-3 pr-10 rounded-lg border-2 border-gray-200 focus:border-[#4F39D7] focus:outline-none text-base font-medium bg-white shadow-sm hover:border-gray-300 transition-colors appearance-none cursor-pointer"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+            backgroundPosition: 'right 0.5rem center',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: '1.5em 1.5em'
+          }}
         >
           {presets.map((preset, index) => (
             <option key={index} value={index}>
               {preset.label}
             </option>
           ))}
-          <option value="custom">Personnalisé</option>
+          <option value="custom">✨ Personnalisé</option>
         </select>
-      </div>
-
-      {/* Desktop: Predefined size buttons */}
-      <div className="hidden md:grid grid-cols-4 lg:grid-cols-6 gap-2">
-        {presets.map((preset, index) => {
-          const isSelected = !isCustomSize && selectedPreset === index
-          return (
-            <button
-              key={index}
-              type="button"
-              onClick={() => handlePresetClick(index)}
-              className={`
-                px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200
-                ${
-                  isSelected
-                    ? 'bg-gradient-to-r from-[#4F39D7] to-[#2BC8F2] text-white shadow-md'
-                    : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-[#4F39D7] hover:text-[#4F39D7]'
-                }
-              `}
-            >
-              {preset.label}
-            </button>
-          )
-        })}
-
-        {/* Custom size button */}
-        <button
-          type="button"
-          onClick={handleCustomClick}
-          className={`
-            px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200
-            ${
-              isCustomSize
-                ? 'bg-gradient-to-r from-[#FEA501] to-[#F9D94C] text-white shadow-md'
-                : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-[#FEA501] hover:text-[#FEA501]'
-            }
-          `}
-        >
-          Personnalisé
-        </button>
       </div>
 
       {/* Custom size inputs */}

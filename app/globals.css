@@ -144,3 +144,25 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Improved select dropdown styling */
+select {
+  color: #111827;
+}
+
+select option {
+  padding: 12px 16px;
+  font-weight: 500;
+  background-color: white;
+  color: #111827;
+}
+
+select option:hover {
+  background-color: #F3F4F6;
+}
+
+select option:checked {
+  background: linear-gradient(to right, #4F39D7, #2BC8F2);
+  color: white;
+  font-weight: 600;
+}
