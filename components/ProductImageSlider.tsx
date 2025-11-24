@@ -83,35 +83,25 @@ export default function ProductImageSlider({ images, productTitle }: ProductImag
             </button>
           </>
         )}
-      </div>
 
-      {/* Thumbnails / Dots */}
-      {images.length > 1 && (
-        <div className="mt-4 flex justify-center gap-2">
-          {images.map((image, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                index === currentIndex
-                  ? 'border-[#4F39D7] shadow-md scale-105'
-                  : 'border-gray-200 hover:border-gray-400'
-              }`}
-              aria-label={`Voir image ${index + 1}`}
-            >
-              <Image
-                src={image}
-                alt={`${productTitle} - Miniature ${index + 1}`}
-                width={64}
-                height={64}
-                className="w-full h-full object-contain bg-black"
-                quality={80}
-                unoptimized
+        {/* Dots indicator */}
+        {images.length > 1 && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`transition-all duration-300 rounded-full ${
+                  index === currentIndex
+                    ? 'w-8 h-2 bg-white'
+                    : 'w-2 h-2 bg-white/50 hover:bg-white/70'
+                }`}
+                aria-label={`Voir image ${index + 1}`}
               />
-            </button>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
