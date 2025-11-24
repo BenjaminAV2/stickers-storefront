@@ -100,8 +100,31 @@ export default function SizePicker({ shape, onChange }: SizePickerProps) {
 
   return (
     <div className="space-y-4">
-      {/* Predefined size buttons */}
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+      {/* Mobile: Dropdown select */}
+      <div className="block md:hidden">
+        <select
+          value={isCustomSize ? 'custom' : selectedPreset}
+          onChange={(e) => {
+            const value = e.target.value
+            if (value === 'custom') {
+              handleCustomClick()
+            } else {
+              handlePresetClick(parseInt(value))
+            }
+          }}
+          className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-[#4F39D7] focus:outline-none text-sm font-medium bg-white"
+        >
+          {presets.map((preset, index) => (
+            <option key={index} value={index}>
+              {preset.label}
+            </option>
+          ))}
+          <option value="custom">Personnalisé</option>
+        </select>
+      </div>
+
+      {/* Desktop: Predefined size buttons */}
+      <div className="hidden md:grid grid-cols-4 lg:grid-cols-6 gap-2">
         {presets.map((preset, index) => {
           const isSelected = !isCustomSize && selectedPreset === index
           return (
