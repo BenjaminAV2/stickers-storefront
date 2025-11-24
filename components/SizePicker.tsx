@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ShapeType, PREDEFINED_SIZES } from '@/lib/pricing'
 
 interface SizePickerProps {
@@ -30,6 +30,8 @@ export default function SizePicker({ shape, onChange }: SizePickerProps) {
   const [heightCm, setHeightCm] = useState(5)
   const [diameterCm, setDiameterCm] = useState(5)
   const [error, setError] = useState<string | null>(null)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Get predefined sizes for current shape
   const presets = PREDEFINED_SIZES[shape]
@@ -96,37 +98,86 @@ export default function SizePicker({ shape, onChange }: SizePickerProps) {
 
   const handleCustomClick = () => {
     setIsCustomSize(true)
+    setIsDropdownOpen(false)
+  }
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const getSelectedLabel = () => {
+    if (isCustomSize) return '✨ Personnalisé'
+    return presets[selectedPreset]?.label || ''
   }
 
   return (
     <div className="space-y-4">
-      {/* Unified dropdown select for both mobile and desktop */}
-      <div className="relative">
-        <select
-          value={isCustomSize ? 'custom' : selectedPreset}
-          onChange={(e) => {
-            const value = e.target.value
-            if (value === 'custom') {
-              handleCustomClick()
-            } else {
-              handlePresetClick(parseInt(value))
-            }
-          }}
-          className="w-full px-4 py-3 pr-10 rounded-lg border-2 border-gray-200 focus:border-[#4F39D7] focus:outline-none text-base font-medium bg-white shadow-sm hover:border-gray-300 transition-colors appearance-none cursor-pointer"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-            backgroundPosition: 'right 0.5rem center',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: '1.5em 1.5em'
-          }}
+      {/* Custom dropdown */}
+      <div className="relative" ref={dropdownRef}>
+        {/* Dropdown button */}
+        <button
+          type="button"
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          className="w-full px-4 py-3 pr-10 rounded-lg border-2 border-gray-200 focus:border-[#4F39D7] focus:outline-none text-base font-medium bg-white shadow-sm hover:border-gray-300 transition-colors text-left"
         >
-          {presets.map((preset, index) => (
-            <option key={index} value={index}>
-              {preset.label}
-            </option>
-          ))}
-          <option value="custom">✨ Personnalisé</option>
-        </select>
+          {getSelectedLabel()}
+          <svg
+            className={`absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 8l4 4 4-4" />
+          </svg>
+        </button>
+
+        {/* Dropdown menu */}
+        {isDropdownOpen && (
+          <div className="absolute z-10 w-full mt-1 bg-blue-50 border-2 border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            {presets.map((preset, index) => (
+              <button
+                key={index}
+                type="button"
+                onClick={() => {
+                  handlePresetClick(index)
+                  setIsDropdownOpen(false)
+                }}
+                className={`w-full px-4 py-3 text-left text-base font-medium transition-colors ${
+                  !isCustomSize && selectedPreset === index
+                    ? 'bg-[#4F39D7] text-white'
+                    : 'text-gray-900 hover:bg-blue-100'
+                }`}
+              >
+                {!isCustomSize && selectedPreset === index && (
+                  <span className="mr-2">✓</span>
+                )}
+                {preset.label}
+              </button>
+            ))}
+
+            {/* Custom option */}
+            <button
+              type="button"
+              onClick={handleCustomClick}
+              className={`w-full px-4 py-3 text-left text-base font-medium transition-colors ${
+                isCustomSize
+                  ? 'bg-[#FEA501] text-white'
+                  : 'text-gray-900 hover:bg-blue-100'
+              }`}
+            >
+              {isCustomSize && <span className="mr-2">✓</span>}
+              ✨ Personnalisé
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Custom size inputs */}
