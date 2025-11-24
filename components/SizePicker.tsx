@@ -131,7 +131,7 @@ export default function SizePicker({ shape, onChange }: SizePickerProps) {
 
       {/* Custom size inputs */}
       {isCustomSize && (
-        <div className="bg-gray-50 rounded-lg p-4 border-2 border-[#FEA501]">
+        <div className="bg-blue-50 rounded-lg p-4 border-2 border-[#FEA501]">
           {shape === 'rond' ? (
             <div className="space-y-3">
               <label className="block">
