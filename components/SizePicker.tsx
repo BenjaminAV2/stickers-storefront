@@ -182,7 +182,7 @@ export default function SizePicker({ shape, onChange }: SizePickerProps) {
 
       {/* Custom size inputs */}
       {isCustomSize && (
-        <div className="bg-blue-50 rounded-lg p-4 border-2 border-[#FEA501]">
+        <div className="bg-white rounded-lg p-4 border-2 border-[#FEA501]">
           {shape === 'rond' ? (
             <div className="space-y-3">
               <label className="block">
@@ -190,23 +190,35 @@ export default function SizePicker({ shape, onChange }: SizePickerProps) {
                   Diamètre personnalisé (cm)
                 </span>
                 <input
-                  type="number"
-                  min={MIN_SIZE}
-                  max={MAX_SIZE}
-                  step={STEP}
+                  type="text"
+                  inputMode="decimal"
                   value={diameterCm}
                   onChange={(e) => {
-                    const val = parseFloat(e.target.value)
-                    if (!isNaN(val)) {
-                      setDiameterCm(val)
+                    const val = e.target.value
+                    // Allow empty string or valid numbers
+                    if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                      const parsed = parseFloat(val)
+                      if (val === '') {
+                        setDiameterCm(0)
+                      } else if (!isNaN(parsed)) {
+                        setDiameterCm(parsed)
+                      }
                     }
                   }}
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#FEA501] focus:outline-none transition-colors"
+                  className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none transition-colors ${
+                    error
+                      ? 'border-red-500 focus:border-red-600 bg-red-50'
+                      : 'border-gray-200 focus:border-[#FEA501]'
+                  }`}
+                  placeholder={`Min: ${MIN_SIZE} cm`}
                 />
               </label>
               {error && (
-                <p className="text-sm text-red-600 bg-red-50 rounded px-3 py-2">
-                  {error}
+                <p className="text-sm text-red-600 bg-red-50 rounded px-3 py-2 flex items-start gap-2">
+                  <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  <span>{error}</span>
                 </p>
               )}
               <p className="text-xs text-gray-500">
@@ -221,18 +233,35 @@ export default function SizePicker({ shape, onChange }: SizePickerProps) {
                     Largeur (cm)
                   </span>
                   <input
-                    type="number"
-                    min={MIN_SIZE}
-                    max={MAX_SIZE}
-                    step={STEP}
+                    type="text"
+                    inputMode="decimal"
                     value={widthCm}
                     onChange={(e) => {
-                      const val = parseFloat(e.target.value)
-                      if (!isNaN(val)) {
-                        setWidthCm(val)
+                      const val = e.target.value
+                      // Allow empty string or valid numbers
+                      if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                        const parsed = parseFloat(val)
+                        if (val === '') {
+                          setWidthCm(0)
+                          // Sync height for rond shape
+                          if (shape === 'rond') {
+                            setHeightCm(0)
+                          }
+                        } else if (!isNaN(parsed)) {
+                          setWidthCm(parsed)
+                          // Sync height for rond shape
+                          if (shape === 'rond') {
+                            setHeightCm(parsed)
+                          }
+                        }
                       }
                     }}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#FEA501] focus:outline-none transition-colors"
+                    className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none transition-colors ${
+                      error
+                        ? 'border-red-500 focus:border-red-600 bg-red-50'
+                        : 'border-gray-200 focus:border-[#FEA501]'
+                    }`}
+                    placeholder={`Min: ${MIN_SIZE}`}
                   />
                 </label>
                 <label className="block">
@@ -240,24 +269,60 @@ export default function SizePicker({ shape, onChange }: SizePickerProps) {
                     Hauteur (cm)
                   </span>
                   <input
-                    type="number"
-                    min={MIN_SIZE}
-                    max={MAX_SIZE}
-                    step={STEP}
+                    type="text"
+                    inputMode="decimal"
                     value={heightCm}
                     onChange={(e) => {
-                      const val = parseFloat(e.target.value)
-                      if (!isNaN(val)) {
-                        setHeightCm(val)
+                      const val = e.target.value
+                      // Allow empty string or valid numbers
+                      if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                        const parsed = parseFloat(val)
+                        if (val === '') {
+                          setHeightCm(0)
+                          // Sync width for rond shape
+                          if (shape === 'rond') {
+                            setWidthCm(0)
+                          }
+                        } else if (!isNaN(parsed)) {
+                          setHeightCm(parsed)
+                          // Sync width for rond shape
+                          if (shape === 'rond') {
+                            setWidthCm(parsed)
+                          }
+                        }
                       }
                     }}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#FEA501] focus:outline-none transition-colors"
+                    className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none transition-colors ${
+                      error
+                        ? 'border-red-500 focus:border-red-600 bg-red-50'
+                        : 'border-gray-200 focus:border-[#FEA501]'
+                    }`}
+                    placeholder={`Min: ${MIN_SIZE}`}
                   />
                 </label>
               </div>
+              {shape === 'rond' && (
+                <p className="text-xs text-blue-900 bg-blue-100 rounded px-3 py-2 flex items-start gap-2">
+                  <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  <span>En forme ronde, les deux côtés sont toujours identiques</span>
+                </p>
+              )}
+              {shape === 'cut_contour' && (
+                <p className="text-xs text-blue-900 bg-blue-100 rounded px-3 py-2 flex items-start gap-2">
+                  <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  <span>La taille sera prise en compte pour le plus grand côté du visuel</span>
+                </p>
+              )}
               {error && (
-                <p className="text-sm text-red-600 bg-red-50 rounded px-3 py-2">
-                  {error}
+                <p className="text-sm text-red-600 bg-red-50 rounded px-3 py-2 flex items-start gap-2">
+                  <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  <span>{error}</span>
                 </p>
               )}
               <p className="text-xs text-gray-500">

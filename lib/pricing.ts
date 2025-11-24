@@ -1,5 +1,5 @@
 // Pricing configuration
-const BASE_EUR_PER_CM2 = 0.045
+const BASE_EUR_PER_CM2 = 0.027
 
 const SUPPORT_MULTIPLIERS = {
   vinyle_blanc: 1,
@@ -10,23 +10,23 @@ const SUPPORT_MULTIPLIERS = {
 
 const SHAPE_MULTIPLIERS = {
   carre_rectangle: 1,
-  carre_rectangle_bords_arrondis: 1.02,
-  rond: 1.05,
-  cut_contour: 1.1,
+  carre_rectangle_bords_arrondis: 1,
+  rond: 1,
+  cut_contour: 1.2,
 }
 
-const QUANTITY_TIERS = [30, 50, 100, 200, 300, 500, 1000, 2000, 3000]
+const QUANTITY_TIERS = [20, 50, 100, 200, 300, 500, 1000, 2000, 3000]
 
 const DISCOUNTS = {
-  30: 0,
-  50: 0.05,
-  100: 0.12,
-  200: 0.18,
-  300: 0.22,
-  500: 0.28,
-  1000: 0.35,
-  2000: 0.42,
-  3000: 0.48,
+  20: 0.20,
+  50: 0.22,
+  100: 0.24,
+  200: 0.28,
+  300: 0.30,
+  500: 0.45,
+  1000: 0.55,
+  2000: 0.60,
+  3000: 0.65,
 }
 
 // Predefined sizes for each shape type
@@ -111,16 +111,19 @@ export interface PriceMatrixRow {
 
 /**
  * Calculate area in cm² based on shape
+ * Always uses the square of the largest side for simplicity
  */
 export function cm2Area({ shape, widthCm, heightCm, diameterCm }: AreaParams): number {
   if (shape === 'rond') {
     if (!diameterCm) return 0
-    const radius = diameterCm / 2
-    return Math.PI * radius * radius
+    // Use square of diameter instead of actual circle area
+    return diameterCm * diameterCm
   }
 
   if (!widthCm || !heightCm) return 0
-  return widthCm * heightCm
+  // Use square of the largest side
+  const maxSide = Math.max(widthCm, heightCm)
+  return maxSide * maxSide
 }
 
 /**
@@ -143,9 +146,9 @@ export function computeUnitPriceCents({
     SUPPORT_MULTIPLIERS[support] *
     SHAPE_MULTIPLIERS[shape]
 
-  // Floor at 0.2€
-  if (base < 0.2) {
-    base = 0.2
+  // Floor at 0.1€
+  if (base < 0.1) {
+    base = 0.1
   }
 
   return Math.round(base * 100)
