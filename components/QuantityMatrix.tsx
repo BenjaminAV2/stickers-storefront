@@ -9,6 +9,7 @@ interface QuantityMatrixProps {
   customQuantityRow?: PriceMatrixRow | null
   onSelect: (q: number) => void
   onCustomQuantityChange?: (q: number) => void
+  showError?: boolean
 }
 
 export default function QuantityMatrix({
@@ -17,6 +18,7 @@ export default function QuantityMatrix({
   customQuantityRow,
   onSelect,
   onCustomQuantityChange,
+  showError = false,
 }: QuantityMatrixProps) {
   const [customQInput, setCustomQInput] = useState('')
   const [isCustomSelected, setIsCustomSelected] = useState(false)
@@ -43,7 +45,7 @@ export default function QuantityMatrix({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-[var(--shadow-card)] overflow-hidden">
+    <div className={`bg-white rounded-lg shadow-[var(--shadow-card)] overflow-hidden ${showError ? 'ring-2 ring-red-500' : ''}`}>
       <div className="px-3 py-2 sm:px-4 sm:py-3 bg-blue-50 border-b border-blue-100">
         <h3 className="text-sm sm:text-base font-semibold text-gray-900">Tarifs dégressifs</h3>
         <p className="text-xs text-gray-500 mt-0.5 hidden sm:block">

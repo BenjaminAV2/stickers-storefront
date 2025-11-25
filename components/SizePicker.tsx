@@ -11,6 +11,7 @@ interface SizePickerProps {
     diameterCm: number
     valid: boolean
   }) => void
+  showError?: boolean
 }
 
 const MIN_SIZE = 2
@@ -23,7 +24,7 @@ const isValidStep = (value: number, step: number = STEP): boolean => {
   return remainder < 0.01 // Account for floating point precision
 }
 
-export default function SizePicker({ shape, onChange }: SizePickerProps) {
+export default function SizePicker({ shape, onChange, showError = false }: SizePickerProps) {
   const [isCustomSize, setIsCustomSize] = useState(false)
   const [selectedPreset, setSelectedPreset] = useState<number>(1) // Index of preset size
   const [widthCm, setWidthCm] = useState(5)
@@ -32,22 +33,75 @@ export default function SizePicker({ shape, onChange }: SizePickerProps) {
   const [error, setError] = useState<string | null>(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const previousShapeRef = useRef<ShapeType>(shape)
 
   // Get predefined sizes for current shape
   const presets = PREDEFINED_SIZES[shape]
 
-  // Initialize with first preset when shape changes
+  // Preserve size when shape changes
   useEffect(() => {
-    if (presets && presets.length > 0 && !isCustomSize) {
-      const preset = presets[selectedPreset] || presets[1]
-      if ('diameterCm' in preset) {
-        setDiameterCm(preset.diameterCm)
+    // Only run if shape actually changed
+    if (previousShapeRef.current === shape) {
+      return
+    }
+
+    const previousShape = previousShapeRef.current
+    previousShapeRef.current = shape
+
+    if (presets && presets.length > 0) {
+      // Determine target size from previous shape
+      let targetSize: number
+      let targetWidth: number
+      let targetHeight: number
+
+      if (previousShape === 'rond') {
+        // Coming FROM rond - use diameter for both dimensions
+        targetSize = diameterCm
+        targetWidth = diameterCm
+        targetHeight = diameterCm
       } else {
-        setWidthCm(preset.widthCm!)
-        setHeightCm(preset.heightCm!)
+        // Coming FROM rectangle - use current width/height
+        targetSize = Math.max(widthCm, heightCm)
+        targetWidth = widthCm
+        targetHeight = heightCm
+      }
+
+      // Try to find matching preset in new shape
+      let matchingPresetIndex = -1
+
+      if (shape === 'rond') {
+        // Switching TO rond - look for diameter matching the target size
+        matchingPresetIndex = presets.findIndex((p) => 'diameterCm' in p && p.diameterCm === targetSize)
+
+        if (matchingPresetIndex !== -1) {
+          setIsCustomSize(false)
+          setSelectedPreset(matchingPresetIndex)
+          setDiameterCm(targetSize)
+        } else {
+          // No matching preset - use custom size
+          setIsCustomSize(true)
+          setDiameterCm(targetSize)
+        }
+      } else {
+        // Switching TO rectangle - look for matching width/height
+        matchingPresetIndex = presets.findIndex(
+          (p) => 'widthCm' in p && p.widthCm === targetWidth && p.heightCm === targetHeight
+        )
+
+        if (matchingPresetIndex !== -1) {
+          setIsCustomSize(false)
+          setSelectedPreset(matchingPresetIndex)
+          setWidthCm(targetWidth)
+          setHeightCm(targetHeight)
+        } else {
+          // No matching preset - use custom size
+          setIsCustomSize(true)
+          setWidthCm(targetWidth)
+          setHeightCm(targetHeight)
+        }
       }
     }
-  }, [shape])
+  }, [shape, widthCm, heightCm, diameterCm, presets])
 
   useEffect(() => {
     // Validate and notify parent
@@ -126,7 +180,11 @@ export default function SizePicker({ shape, onChange }: SizePickerProps) {
         <button
           type="button"
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="w-full px-4 py-3 pr-10 rounded-lg border-2 border-gray-200 focus:border-[#4F39D7] focus:outline-none text-base font-medium bg-white shadow-sm hover:border-gray-300 transition-colors text-left"
+          className={`w-full px-4 py-3 pr-10 rounded-lg border-2 focus:outline-none text-base font-medium bg-white shadow-sm transition-colors text-left ${
+            showError
+              ? 'border-red-500 focus:border-red-600'
+              : 'border-gray-200 focus:border-[#4F39D7] hover:border-gray-300'
+          }`}
         >
           {getSelectedLabel()}
           <svg

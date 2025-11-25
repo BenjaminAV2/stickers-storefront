@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { Product } from '@/lib/types'
 import { SupportType, ShapeType, computeMatrix, computeCustomQuantityPrice, PriceMatrixRow, formatEur } from '@/lib/pricing'
@@ -27,6 +27,11 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
   })
   const [selectedQ, setSelectedQ] = useState(30)
   const [customQuantityRow, setCustomQuantityRow] = useState<PriceMatrixRow | null>(null)
+  const [showErrors, setShowErrors] = useState(false)
+
+  // Refs for scrolling to error sections
+  const sizeRef = useRef<HTMLDivElement>(null)
+  const quantityRef = useRef<HTMLDivElement>(null)
 
   // Compute price matrix whenever config changes
   const priceMatrix: PriceMatrixRow[] = size.valid
@@ -72,11 +77,50 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
     [support, shape, size]
   )
 
-  const handleAddToCart = () => {
-    // Use custom quantity row if it exists and quantity matches, otherwise use preset
-    const selectedRow = customQuantityRow || priceMatrix.find((row) => row.q === selectedQ)
-    if (!selectedRow) return
+  // Recalculate custom quantity price when configuration changes
+  useEffect(() => {
+    if (customQuantityRow && size.valid) {
+      const updatedRow = computeCustomQuantityPrice(
+        {
+          support,
+          shape,
+          widthCm: size.widthCm,
+          heightCm: size.heightCm,
+          diameterCm: size.diameterCm,
+        },
+        customQuantityRow.q
+      )
+      setCustomQuantityRow(updatedRow)
+    }
+  }, [support, shape, size.widthCm, size.heightCm, size.diameterCm, size.valid])
 
+  const handleAddToCart = () => {
+    // Validate configuration
+    const selectedRow = customQuantityRow || priceMatrix.find((row) => row.q === selectedQ)
+    const hasErrors = !size.valid || !selectedRow
+
+    if (hasErrors) {
+      setShowErrors(true)
+      toast.error('Veuillez vérifier votre configuration', {
+        duration: 3000,
+        style: {
+          background: '#ef4444',
+          color: '#fff',
+        },
+      })
+
+      // Scroll to the first error
+      if (!size.valid && sizeRef.current) {
+        sizeRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      } else if (!selectedRow && quantityRef.current) {
+        quantityRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+
+      return
+    }
+
+    // Configuration valid - add to cart
+    setShowErrors(false)
     addItem({
       productId: product.id,
       handle: product.handle || '',
@@ -102,8 +146,9 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
     })
   }
 
-  const selectedRow = priceMatrix.find((row) => row.q === selectedQ)
-  const isAddToCartDisabled = !size.valid || !selectedRow
+  const selectedRow = customQuantityRow && customQuantityRow.q === selectedQ
+    ? customQuantityRow
+    : priceMatrix.find((row) => row.q === selectedQ)
 
   return (
     <div className="space-y-6">
@@ -127,18 +172,18 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
           </div>
 
           {/* Size */}
-          <div>
+          <div ref={sizeRef}>
             <h3 className="text-sm font-semibold text-gray-700 mb-3">
               2. Définissez les dimensions
             </h3>
-            <SizePicker shape={shape} onChange={handleSizeChange} />
+            <SizePicker shape={shape} onChange={handleSizeChange} showError={showErrors && !size.valid} />
           </div>
         </div>
       </div>
 
       {/* Price matrix */}
       {size.valid && priceMatrix.length > 0 && (
-        <div>
+        <div ref={quantityRef}>
           <h3 className="text-sm font-semibold text-gray-700 mb-3">
             3. Sélectionnez la quantité
           </h3>
@@ -148,28 +193,17 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
             customQuantityRow={customQuantityRow}
             onSelect={setSelectedQ}
             onCustomQuantityChange={handleCustomQuantityChange}
+            showError={showErrors && !selectedRow}
           />
         </div>
       )}
 
-      {/* Add to cart button */}
+      {/* Add to cart button - Always enabled, orange */}
       <button
         onClick={handleAddToCart}
-        disabled={isAddToCartDisabled}
-        className={`
-          w-full py-4 px-6 rounded-lg font-semibold text-lg transition-all
-          ${
-            isAddToCartDisabled
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-gradient-to-r from-[#4F39D7] to-[#2BC8F2] text-white hover:shadow-lg'
-          }
-        `}
+        className="w-full py-4 px-6 rounded-lg font-semibold text-lg transition-all bg-[#FEA501] text-white hover:bg-[#e89401] hover:shadow-lg"
       >
-        {isAddToCartDisabled
-          ? 'Configurez votre sticker'
-          : selectedRow
-          ? `Ajouter au panier • ${formatEur(selectedRow.totalCents)}`
-          : 'Ajouter au panier'}
+        {selectedRow ? `Commander • ${formatEur(selectedRow.totalCents)}` : 'Commander'}
       </button>
     </div>
   )
