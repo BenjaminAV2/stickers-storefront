@@ -8,6 +8,7 @@ import SupportShapePicker from './SupportShapePicker'
 import SizePicker from './SizePicker'
 import QuantityMatrix from './QuantityMatrix'
 import { useCart } from '@/contexts/CartContext'
+import StickyCheckoutButton from './StickyCheckoutButton'
 
 interface ProductConfiguratorProps {
   product: Product
@@ -200,11 +201,20 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
 
       {/* Add to cart button - Always enabled, orange */}
       <button
+        data-checkout-button
         onClick={handleAddToCart}
         className="w-full py-4 px-6 rounded-lg font-semibold text-lg transition-all bg-[#FEA501] text-white hover:bg-[#e89401] hover:shadow-lg"
       >
         {selectedRow ? `Commander • ${formatEur(selectedRow.totalCents)}` : 'Commander'}
       </button>
+
+      {/* Sticky Checkout Button */}
+      <StickyCheckoutButton
+        totalCents={selectedRow?.totalCents || 0}
+        buttonText="Commander"
+        onClick={handleAddToCart}
+        showPrice={!!selectedRow}
+      />
     </div>
   )
 }
