@@ -41,7 +41,7 @@ export const Categories: CollectionConfig = {
     {
       name: 'parent',
       type: 'relationship',
-      relationTo: 'categories',
+      relationTo: 'categories' as any,
       admin: {
         description: 'Catégorie parente (pour sous-catégories)',
       },
