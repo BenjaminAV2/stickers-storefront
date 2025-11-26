@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const payload = await getPayload({ config })
-    const { id } = params
+    const { id } = await params
 
     // Récupérer la commande avec toutes les relations
     const order = await payload.findByID({
@@ -44,10 +44,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const payload = await getPayload({ config })
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
 
     // Mettre à jour la commande
