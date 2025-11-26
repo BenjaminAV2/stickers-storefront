@@ -19,7 +19,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     // Récupérer toutes les commandes du client si la relation customer existe
-    let customerOrders = []
+    let customerOrders: any[] = []
     if (order.customer && typeof order.customer === 'object' && 'id' in order.customer) {
       const ordersResult = await payload.find({
         collection: 'orders',
