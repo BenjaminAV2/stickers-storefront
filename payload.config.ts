@@ -7,11 +7,14 @@ import sharp from 'sharp'
 
 // Import collections
 import { Users } from './payload/collections/Users'
+import { Customers } from './payload/collections/Customers'
 import { Pages } from './payload/collections/Pages'
 import { Media } from './payload/collections/Media'
 import { PricingSettings } from './payload/collections/PricingSettings'
 import { Orders } from './payload/collections/Orders'
 import { ShippingProviders } from './payload/collections/ShippingProviders'
+import { Categories } from './payload/collections/Categories'
+import { Products } from './payload/collections/Products'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -27,7 +30,17 @@ export default buildConfig({
     },
   },
 
-  collections: [Users, Pages, Media, PricingSettings, Orders, ShippingProviders],
+  collections: [
+    Users,
+    Customers,
+    Orders,
+    Products,
+    Categories,
+    Pages,
+    Media,
+    ShippingProviders,
+    PricingSettings,
+  ],
 
   editor: lexicalEditor(),
 

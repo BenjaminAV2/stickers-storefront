@@ -11,12 +11,17 @@
     "generate:payload-types": "payload generate:types"
   },
   "dependencies": {
+    "@auth/mongodb-adapter": "^3.11.1",
     "@payloadcms/db-mongodb": "^3.63.0",
     "@payloadcms/next": "^3.63.0",
     "@payloadcms/richtext-lexical": "^3.63.0",
+    "@react-pdf/renderer": "^4.3.1",
+    "bcryptjs": "^3.0.3",
+    "jspdf": "^3.0.4",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.553.0",
     "next": "16.0.1",
+    "next-auth": "^5.0.0-beta.30",
     "payload": "^3.63.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
