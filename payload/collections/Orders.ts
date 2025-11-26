@@ -48,7 +48,7 @@ export const Orders: CollectionConfig = {
     {
       name: 'customer',
       type: 'relationship',
-      relationTo: 'customers',
+      relationTo: 'customers' as any,
       required: true,
       admin: {
         position: 'sidebar',
