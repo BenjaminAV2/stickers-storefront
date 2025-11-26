@@ -20,54 +20,52 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.handle}`} className="group block">
-      <div className="overflow-hidden rounded-lg border bg-white transition-all duration-300 hover:shadow-[var(--shadow-card-hover)]" style={{ boxShadow: 'var(--shadow-card)' }}>
-        <div className="p-0">
-          {/* Image Container - Ratio 1:1 */}
-          <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-            <Image
-              src={imageUrl}
-              alt={product.title}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-            />
-            {/* Glossy Overlay on Hover */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/0 to-white/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-          </div>
+      <div
+        className="bg-black rounded-2xl transition-all duration-300 overflow-hidden border-[3px] border-white hover:shadow-[6px_6px_16px_rgba(0,0,0,0.4)]"
+        style={{
+          boxShadow: '4px 4px 12px rgba(0, 0, 0, 0.3)'
+        }}
+      >
+        {/* Image Container - Ratio 1:1 */}
+        <div className="relative aspect-square overflow-hidden bg-black flex items-center justify-center p-6">
+          <Image
+            src={imageUrl}
+            alt={product.title}
+            fill
+            className="object-contain transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            quality={100}
+            unoptimized
+          />
+        </div>
 
-          {/* Product Info */}
-          <div className="space-y-2 p-4">
-            {/* Product Name */}
-            <h3 className="font-bold text-base text-foreground line-clamp-2 transition-colors group-hover:text-[var(--color-brand-violet)]">
-              {product.title}
-            </h3>
+        {/* Product Info */}
+        <div className="p-4 bg-black">
+          {/* Product Name */}
+          <h3 className="font-bold text-base text-white mb-2 group-hover:text-[#2B9FE0] transition-colors line-clamp-2">
+            {product.title}
+          </h3>
 
-            {/* Description (optional) */}
-            {product.description && (
-              <p className="text-sm text-gray-600 line-clamp-2">
-                {product.description}
+          {/* Description (optional) */}
+          {product.description && (
+            <p className="text-sm text-gray-300 line-clamp-2 mb-3 leading-relaxed">
+              {product.description}
+            </p>
+          )}
+
+          {/* Price & Variants */}
+          <div className="pt-2 border-t border-gray-800">
+            <div className="flex items-baseline gap-2">
+              <p className="text-xs text-gray-400">À partir de</p>
+              <p className="text-lg sm:text-xl font-bold text-white">
+                {price > 0 ? `${price.toFixed(2)}€` : '0.00€'}
+              </p>
+            </div>
+            {variantCount > 1 && (
+              <p className="text-xs text-gray-400 mt-2">
+                {variantCount} tailles disponibles
               </p>
             )}
-
-            {/* Price & Variants */}
-            <div className="flex items-center justify-between">
-              {price > 0 ? (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">À partir de</p>
-                  <p className="text-lg font-bold text-[var(--color-brand-violet)]">
-                    {price.toFixed(2)} €
-                    <span className="text-xs font-normal text-muted-foreground"> TTC</span>
-                  </p>
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500">Prix sur demande</p>
-              )}
-              {variantCount > 1 && (
-                <span className="rounded-full bg-[var(--color-brand-highlight)]/10 px-2.5 py-1 text-xs font-medium text-[var(--color-brand-highlight)]">
-                  {variantCount} tailles
-                </span>
-              )}
-            </div>
           </div>
         </div>
       </div>

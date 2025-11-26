@@ -5,6 +5,7 @@ import ProductImageSlider from '@/components/ProductImageSlider'
 import ProductSlider from '@/components/ProductSlider'
 import ExpandableContent from '@/components/ExpandableContent'
 import Footer from '@/components/Footer'
+import LottieAnimation from '@/components/LottieAnimation'
 import { Product } from '@/lib/types'
 import { getProducts } from '@/lib/api'
 
@@ -117,16 +118,7 @@ export default async function ProductPage({
                 <div className="grid grid-cols-1 gap-6 p-6 lg:p-8">
                   {/* Vidéo */}
                   <div className="relative aspect-video bg-gray-900 rounded-xl overflow-hidden">
-                    <video
-                      className="w-full h-full object-cover"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                    >
-                      <source src="/video-placeholder.mp4" type="video/mp4" />
-                      Votre navigateur ne supporte pas la vidéo.
-                    </video>
+                    <LottieAnimation />
                   </div>
 
                   {/* Bloc texte */}
@@ -157,16 +149,7 @@ export default async function ProductPage({
             <div className="grid grid-cols-1 gap-6 p-6">
               {/* Vidéo */}
               <div className="relative aspect-video bg-gray-900 rounded-xl overflow-hidden">
-                <video
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                >
-                  <source src="/video-placeholder.mp4" type="video/mp4" />
-                  Votre navigateur ne supporte pas la vidéo.
-                </video>
+                <LottieAnimation />
               </div>
 
               {/* Bloc texte */}

@@ -5,6 +5,7 @@ import { Product } from '@/lib/types'
 import Footer from '@/components/Footer'
 import HeroStickerSection from '@/components/HeroStickerSection'
 import ExpandableContent from '@/components/ExpandableContent'
+import LottieAnimation from '@/components/LottieAnimation'
 
 export default async function Home() {
   // Fetch products from API
@@ -207,16 +208,7 @@ export default async function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Vidéo - à droite sur desktop */}
             <div className="relative aspect-video bg-gray-900 rounded-2xl overflow-hidden lg:order-2">
-              <video
-                className="w-full h-full object-cover"
-                autoPlay
-                loop
-                muted
-                playsInline
-              >
-                <source src="/video-placeholder.mp4" type="video/mp4" />
-                Votre navigateur ne supporte pas la vidéo.
-              </video>
+              <LottieAnimation />
             </div>
 
             {/* Bloc texte - à gauche sur desktop */}
