@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       collection: 'orders',
       id,
       depth: 3,
-    })
+    }) as any
 
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
