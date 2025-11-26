@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
         ? {
             and: whereConditions,
           }
-        : {}
+        : undefined
 
     // Récupérer les commandes
     const ordersResult = await payload.find({
