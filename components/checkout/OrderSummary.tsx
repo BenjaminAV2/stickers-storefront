@@ -53,7 +53,7 @@ export function OrderSummary({ selectedShipping }: OrderSummaryProps) {
 
         {selectedShipping && (
           <div className="flex justify-between text-sm text-gray-600">
-            <span>Livraison ({selectedShipping.name})</span>
+            <span>Livraison ({selectedShipping.title})</span>
             <span>{formatEur(shippingCost)}</span>
           </div>
         )}
