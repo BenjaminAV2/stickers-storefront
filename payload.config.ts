@@ -30,6 +30,9 @@ export default buildConfig({
       favicon: '/favicon.ico',
       ogImage: '/og-image.jpg',
     },
+    components: {
+      beforeNavLinks: ['@/payload/components/CustomNav'],
+    },
   },
 
   collections: [

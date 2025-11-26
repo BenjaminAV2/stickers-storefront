@@ -255,7 +255,7 @@ export default function OrdersList() {
                       </td>
                       <td className="px-3 py-4 whitespace-nowrap text-sm">
                         <a
-                          href={`/admin/collections/orders/${order.id}`}
+                          href={`/order-detail/${order.id}`}
                           className="text-blue-600 hover:text-blue-800 font-medium"
                         >
                           {order.orderNumber}

@@ -1,21 +1,27 @@
 /* Custom Payload CMS styles */
 
-/* Fix logo size issue */
-.payload-logo,
-.nav-logo,
-[class*="logo"] {
-  max-width: 200px;
-  max-height: 50px;
-  object-fit: contain;
+/* Fix logo size issue - More specific selectors for Payload 3 */
+nav img,
+header img,
+.nav__logo img,
+.app-header__logo img,
+[data-payload-logo] img,
+img[src*="logo"] {
+  max-width: 150px !important;
+  max-height: 40px !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
 }
 
-/* Ensure admin header doesn't overflow */
-.app-header,
-[class*="app-header"] {
-  .logo {
-    max-width: 200px;
-    max-height: 50px;
-    object-fit: contain;
+/* Ensure nav header has proper sizing */
+nav,
+.nav,
+.app-header {
+  img {
+    max-width: 150px !important;
+    max-height: 40px !important;
+    object-fit: contain !important;
   }
 }
 
