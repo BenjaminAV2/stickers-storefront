@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
     // Filtrer par date
     if (dateFrom) {
       whereConditions.push({
-        paymentValidatedAt: {
+        createdAt: {
           greater_than_equal: startOfDay(new Date(dateFrom)).toISOString(),
         },
       })
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
 
     if (dateTo) {
       whereConditions.push({
-        paymentValidatedAt: {
+        createdAt: {
           less_than_equal: endOfDay(new Date(dateTo)).toISOString(),
         },
       })
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     if (!dateFrom && !dateTo) {
       const today = new Date()
       whereConditions.push({
-        paymentValidatedAt: {
+        createdAt: {
           greater_than_equal: startOfDay(today).toISOString(),
           less_than_equal: endOfDay(today).toISOString(),
         },
@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
     const ordersResult = await payload.find({
       collection: 'orders',
       where,
-      sort: '-paymentValidatedAt',
+      sort: '-createdAt',
       page,
       limit,
       depth: 2, // Pour récupérer les relations (customer, etc.)

@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       where: {
         and: [
           {
-            paymentValidatedAt: {
+            createdAt: {
               greater_than_equal: thirtyDaysAgo.toISOString(),
             },
           },
@@ -55,8 +55,8 @@ export async function GET(request: NextRequest) {
 
     // Regrouper les commandes par jour
     ordersResult.docs.forEach((order: any) => {
-      if (order.paymentValidatedAt) {
-        const dateStr = format(new Date(order.paymentValidatedAt), 'yyyy-MM-dd')
+      if (order.createdAt) {
+        const dateStr = format(new Date(order.createdAt), 'yyyy-MM-dd')
         if (dailyStats[dateStr]) {
           dailyStats[dateStr].revenue += order.totalCents || 0
           dailyStats[dateStr].orderCount += 1
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
     // Récupérer les 40 dernières commandes
     const recentOrdersResult = await payload.find({
       collection: 'orders',
-      sort: '-paymentValidatedAt',
+      sort: '-createdAt',
       limit: 40,
       depth: 1,
     })

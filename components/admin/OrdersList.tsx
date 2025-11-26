@@ -8,7 +8,7 @@ interface Order {
   id: string
   orderNumber: string
   status: string
-  paymentValidatedAt: string
+  createdAt: string
   totalCents: number
   customer: any
   shippingAddress: any
@@ -244,8 +244,8 @@ export default function OrdersList() {
                   {data.orders.map((order) => (
                     <tr key={order.id} className="hover:bg-gray-50">
                       <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {order.paymentValidatedAt
-                          ? format(new Date(order.paymentValidatedAt), 'dd/MM/yyyy HH:mm', {
+                        {order.createdAt
+                          ? format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm', {
                               locale: fr,
                             })
                           : '-'}

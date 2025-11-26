@@ -8,7 +8,7 @@ interface Order {
   id: string
   orderNumber: string
   status: string
-  paymentValidatedAt: string
+  createdAt: string
   totalCents: number
   subtotalHT: number
   taxCents: number
@@ -146,8 +146,8 @@ export default function OrderDetail({ orderId }: OrderDetailProps) {
           <span>•</span>
           <span>
             Date:{' '}
-            {order.paymentValidatedAt
-              ? format(new Date(order.paymentValidatedAt), 'dd/MM/yyyy HH:mm', { locale: fr })
+            {order.createdAt
+              ? format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm', { locale: fr })
               : 'N/A'}
           </span>
         </div>

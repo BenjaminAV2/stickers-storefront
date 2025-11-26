@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
         where: {
           and: [
             {
-              paymentValidatedAt: {
+              createdAt: {
                 greater_than_equal: thirtyMonthsAgo.toISOString(),
               },
             },
@@ -55,8 +55,8 @@ export async function GET(request: NextRequest) {
 
       // Regrouper les commandes par mois
       ordersResult.docs.forEach((order: any) => {
-        if (order.paymentValidatedAt) {
-          const monthStr = format(new Date(order.paymentValidatedAt), 'yyyy-MM')
+        if (order.createdAt) {
+          const monthStr = format(new Date(order.createdAt), 'yyyy-MM')
           if (monthlyStats[monthStr]) {
             monthlyStats[monthStr].revenue += order.totalCents || 0
             monthlyStats[monthStr].orderCount += 1
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
         where: {
           and: [
             {
-              paymentValidatedAt: {
+              createdAt: {
                 greater_than_equal: thirtyDaysAgo.toISOString(),
               },
             },
@@ -121,8 +121,8 @@ export async function GET(request: NextRequest) {
 
       // Regrouper les commandes par jour
       ordersResult.docs.forEach((order: any) => {
-        if (order.paymentValidatedAt) {
-          const dateStr = format(new Date(order.paymentValidatedAt), 'yyyy-MM-dd')
+        if (order.createdAt) {
+          const dateStr = format(new Date(order.createdAt), 'yyyy-MM-dd')
           if (dailyStats[dateStr]) {
             dailyStats[dateStr].revenue += order.totalCents || 0
             dailyStats[dateStr].orderCount += 1
@@ -154,7 +154,7 @@ export async function GET(request: NextRequest) {
         where: {
           and: [
             {
-              paymentValidatedAt: {
+              createdAt: {
                 greater_than_equal: thirtyDaysAgoLastYear.toISOString(),
                 less_than_equal: lastYear.toISOString(),
               },
@@ -192,8 +192,8 @@ export async function GET(request: NextRequest) {
 
       // Regrouper les commandes par jour
       ordersResult.docs.forEach((order: any) => {
-        if (order.paymentValidatedAt) {
-          const dateStr = format(new Date(order.paymentValidatedAt), 'yyyy-MM-dd')
+        if (order.createdAt) {
+          const dateStr = format(new Date(order.createdAt), 'yyyy-MM-dd')
           if (dailyStats[dateStr]) {
             dailyStats[dateStr].revenue += order.totalCents || 0
             dailyStats[dateStr].orderCount += 1
