@@ -1,1 +1,30 @@
 /* Custom Payload CMS styles */
+
+/* Fix logo size issue */
+.payload-logo,
+.nav-logo,
+[class*="logo"] {
+  max-width: 200px;
+  max-height: 50px;
+  object-fit: contain;
+}
+
+/* Ensure admin header doesn't overflow */
+.app-header,
+[class*="app-header"] {
+  .logo {
+    max-width: 200px;
+    max-height: 50px;
+    object-fit: contain;
+  }
+}
+
+/* Custom admin pages styling */
+.custom-admin-page {
+  padding: 2rem;
+  max-width: 100%;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}

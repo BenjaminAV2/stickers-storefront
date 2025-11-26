@@ -27,6 +27,8 @@ export default buildConfig({
     },
     meta: {
       titleSuffix: '- Exclusives Stickers CMS',
+      favicon: '/favicon.ico',
+      ogImage: '/og-image.jpg',
     },
   },
 
