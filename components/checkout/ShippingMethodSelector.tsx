@@ -10,7 +10,6 @@ interface ShippingMethodSelectorProps {
   countryCode: string
   postalCode: string
   onSelect: (provider: ShippingProvider) => void
-  onBack: () => void
   selectedProvider?: ShippingProvider
 }
 
@@ -18,7 +17,6 @@ export function ShippingMethodSelector({
   countryCode,
   postalCode,
   onSelect,
-  onBack,
   selectedProvider,
 }: ShippingMethodSelectorProps) {
   const { providers, loading, error } = useFilteredShippers(countryCode, postalCode, 'fr')
@@ -43,12 +41,6 @@ export function ShippingMethodSelector({
       <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
         <p className="text-red-800 font-medium">Erreur lors du chargement des transporteurs</p>
         <p className="text-red-600 text-sm mt-2">{error}</p>
-        <button
-          onClick={onBack}
-          className="mt-4 px-6 py-2 bg-white border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors"
-        >
-          Retour
-        </button>
       </div>
     )
   }
@@ -61,14 +53,8 @@ export function ShippingMethodSelector({
           Aucun mode de livraison disponible pour cette adresse
         </p>
         <p className="text-yellow-700 text-sm mt-2">
-          Veuillez vérifier votre adresse ou contacter notre service client
+          Veuillez vérifier votre adresse ci-dessus ou contacter notre service client
         </p>
-        <button
-          onClick={onBack}
-          className="mt-4 px-6 py-2 bg-white border border-yellow-300 text-yellow-700 rounded-lg hover:bg-yellow-50 transition-colors"
-        >
-          Modifier l'adresse
-        </button>
       </div>
     )
   }
@@ -164,35 +150,6 @@ export function ShippingMethodSelector({
         ))}
       </div>
 
-      <div className="flex gap-3 pt-4">
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex-1 px-6 py-4 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-        >
-          Retour
-        </button>
-        <button
-          type="button"
-          disabled={!selected}
-          onClick={() => {
-            const provider = providers.find((p) => p.id === selected)
-            if (provider) {
-              onSelect(provider)
-            }
-          }}
-          className={`
-            flex-1 px-6 py-4 rounded-lg font-medium transition-colors shadow-lg
-            ${
-              selected
-                ? 'bg-[#5b40d7] text-white hover:bg-[#4a33b8]'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            }
-          `}
-        >
-          Continuer
-        </button>
-      </div>
     </div>
   )
 }

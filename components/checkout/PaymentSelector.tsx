@@ -6,7 +6,6 @@ import type { PaymentProvider } from '@/lib/types/checkout'
 
 interface PaymentSelectorProps {
   onSelect: (method: PaymentProvider) => void
-  onBack: () => void
   selectedMethod?: PaymentProvider
 }
 
@@ -27,7 +26,7 @@ const PAYMENT_METHODS = [
   },
 ]
 
-export function PaymentSelector({ onSelect, onBack, selectedMethod }: PaymentSelectorProps) {
+export function PaymentSelector({ onSelect, selectedMethod }: PaymentSelectorProps) {
   const [selected, setSelected] = useState<PaymentProvider | undefined>(selectedMethod)
 
   const handleSelect = (method: PaymentProvider) => {
@@ -94,30 +93,13 @@ export function PaymentSelector({ onSelect, onBack, selectedMethod }: PaymentSel
         </p>
       </div>
 
-      <div className="flex gap-3 pt-4">
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex-1 px-6 py-4 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-        >
-          Retour
-        </button>
-        <button
-          type="button"
-          disabled={!selected}
-          onClick={handleContinue}
-          className={`
-            flex-1 px-6 py-4 rounded-lg font-medium transition-colors shadow-lg
-            ${
-              selected
-                ? 'bg-[#5b40d7] text-white hover:bg-[#4a33b8]'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            }
-          `}
-        >
-          Continuer vers le paiement
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={handleContinue}
+        className="w-full px-6 py-4 rounded-lg font-medium transition-colors shadow-lg mt-4 bg-[#5b40d7] text-white hover:bg-[#4a33b8]"
+      >
+        Valider le paiement
+      </button>
     </div>
   )
 }
