@@ -12,7 +12,7 @@ import type {
 interface CheckoutContextType {
   state: CheckoutState
   setShippingAddress: (address: ShippingAddress) => void
-  setSelectedShippingProvider: (provider: ShippingProvider) => void
+  setSelectedShippingProvider: (provider: ShippingProvider | undefined) => void
   setSelectedRelayPoint: (point: RelayPoint | undefined) => void
   setPaymentMethod: (method: PaymentProvider) => void
   setCurrentStep: (step: number) => void
@@ -34,7 +34,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     setState((prev) => ({ ...prev, shippingAddress: address }))
   }, [])
 
-  const setSelectedShippingProvider = useCallback((provider: ShippingProvider) => {
+  const setSelectedShippingProvider = useCallback((provider: ShippingProvider | undefined) => {
     setState((prev) => ({ ...prev, selectedShippingProvider: provider }))
   }, [])
 
