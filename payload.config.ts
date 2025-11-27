@@ -21,7 +21,9 @@ const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
-    user: Users.slug,
+    // TEMPORARY: Disable authentication to access admin panel
+    // user: Users.slug,
+    disable: false,
     importMap: {
       baseDir: path.resolve(dirname),
     },
