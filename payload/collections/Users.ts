@@ -2,12 +2,11 @@ import type { CollectionConfig } from 'payload'
 
 export const Users: CollectionConfig = {
   slug: 'users',
-  // TEMPORARY: Auth disabled to allow unrestricted admin access
-  // auth: {
-  //   maxLoginAttempts: 999999,
-  //   lockTime: 1,
-  //   useAPIKey: false,
-  // },
+  auth: {
+    maxLoginAttempts: 999999,
+    lockTime: 1,
+    useAPIKey: false,
+  },
   admin: {
     useAsTitle: 'email',
   },
