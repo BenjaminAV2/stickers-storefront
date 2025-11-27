@@ -35,20 +35,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         // Si c'est un admin, on cherche dans la collection users de Payload
         if (isAdmin) {
-          const users = await payload.find({
-            collection: 'users',
-            where: {
-              email: {
-                equals: credentials.email as string,
-              },
-            },
-          })
+          // Access MongoDB directly to get the password field
+          // Payload's find() filters out password for security, so we need direct DB access
+          const db = payload.db
+          const User = (db as any).collections['users']
 
-          if (users.docs.length === 0) {
+          const user = await User.findOne({ email: credentials.email as string })
+
+          if (!user) {
             throw new Error('Email ou mot de passe incorrect')
           }
-
-          const user = users.docs[0]
 
           // Vérifier le mot de passe
           if (!user.password) {
@@ -65,7 +61,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
 
           return {
-            id: user.id,
+            id: user._id.toString(),
             email: user.email,
             name: user.name,
             role: user.role || 'admin',
@@ -74,20 +70,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         // Sinon, c'est un client (collection customers de Payload)
-        const customers = await payload.find({
-          collection: 'customers' as any,
-          where: {
-            email: {
-              equals: credentials.email as string,
-            },
-          },
-        })
+        // Access MongoDB directly to get the password field
+        const db = payload.db
+        const Customer = (db as any).collections['customers']
 
-        if (customers.docs.length === 0) {
+        const customer = await Customer.findOne({ email: credentials.email as string })
+
+        if (!customer) {
           throw new Error('Email ou mot de passe incorrect')
         }
-
-        const customer = customers.docs[0] as any
 
         // Vérifier le mot de passe
         if (!customer.password) {
@@ -104,7 +95,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         return {
-          id: customer.id,
+          id: customer._id.toString(),
           email: customer.email,
           name: customer.name || customer.firstName + ' ' + customer.lastName,
           role: 'customer',
