@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     // Vérifier si l'email existe déjà
     const existingCustomers = await payload.find({
-      collection: 'customers',
+      collection: 'customers' as any,
       where: {
         email: {
           equals: email,
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
     // Créer le client
     const customer = await payload.create({
-      collection: 'customers',
+      collection: 'customers' as any,
       data: {
         email,
         password: hashedPassword,
