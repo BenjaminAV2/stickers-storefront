@@ -126,8 +126,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           return {
             id: (user as any)._id.toString(),
-            email: user.email,
-            name: user.name,
+            email: (user as any).email,
+            name: (user as any).name,
             role: (user as any).role || 'admin',
             isAdmin: true,
           }
@@ -155,7 +155,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         return {
           id: (customer as any)._id.toString(),
-          email: customer.email,
+          email: (customer as any).email,
           name: (customer as any).name || (customer as any).firstName + ' ' + (customer as any).lastName,
           role: 'customer',
           isAdmin: false,
