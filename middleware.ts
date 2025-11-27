@@ -1,9 +1,8 @@
-import { auth } from '@/auth'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
-export default auth((req) => {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
-  const session = req.auth
 
   // Routes publiques
   const publicRoutes = [
@@ -44,24 +43,23 @@ export default auth((req) => {
     pathname.startsWith(route)
   )
 
-  // Si pas de session, rediriger vers la page de connexion
-  if (!session) {
+  // Récupérer le token JWT pour vérifier la session
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+
+  // Si pas de token (session), rediriger vers la page de connexion
+  if (!token) {
     const signInUrl = new URL('/auth/signin', req.url)
     signInUrl.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(signInUrl)
   }
 
   // Si route admin, vérifier que l'utilisateur est admin
-  if (isAdminRoute && !session.user.isAdmin) {
+  if (isAdminRoute && !token.isAdmin) {
     return NextResponse.redirect(new URL('/auth/error?error=AccessDenied', req.url))
   }
 
-  // Si route client protégée, vérifier que l'utilisateur est connecté (déjà fait ci-dessus)
-  // Mais on peut aussi vérifier que ce n'est pas un admin qui essaie d'accéder à l'espace client
-  // (optionnel, selon vos besoins)
-
   return NextResponse.next()
-})
+}
 
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
