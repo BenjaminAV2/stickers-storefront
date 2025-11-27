@@ -26,7 +26,6 @@ export async function POST(request: NextRequest) {
     const payload = await getPayload({ config })
 
     // Vérifier si l'email existe déjà
-    // @ts-expect-error - customers collection exists in Payload
     const existingCustomers = await payload.find({
       collection: 'customers',
       where: {
@@ -47,7 +46,6 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     // Créer le client
-    // @ts-expect-error - customers collection exists in Payload
     const customer = await payload.create({
       collection: 'customers',
       data: {
