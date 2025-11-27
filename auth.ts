@@ -3,8 +3,6 @@ import Credentials from 'next-auth/providers/credentials'
 import { MongoDBAdapter } from '@auth/mongodb-adapter'
 import { MongoClient } from 'mongodb'
 import bcrypt from 'bcrypt'
-import { getPayload } from 'payload'
-import config from './payload.config'
 
 // MongoDB client for NextAuth adapter
 const client = new MongoClient(process.env.DATABASE_URL!)
@@ -37,6 +35,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Email et mot de passe requis')
         }
+
+        // Import Payload dynamically to avoid edge runtime issues
+        const { getPayload } = await import('payload')
+        const config = (await import('./payload.config')).default
 
         const payload = await getPayload({ config })
         const isAdmin = credentials.isAdmin === 'true' || credentials.isAdmin === true
