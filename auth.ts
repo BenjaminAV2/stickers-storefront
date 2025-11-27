@@ -1,6 +1,59 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
+import crypto from 'crypto'
 import bcrypt from 'bcrypt'
+// @ts-expect-error - no types available
+import scmp from 'scmp'
+
+// Verify password using bcrypt (legacy format)
+async function verifyBcryptPassword(passwordHash: string, password: string): Promise<boolean> {
+  try {
+    return await bcrypt.compare(password, passwordHash)
+  } catch {
+    return false
+  }
+}
+
+// Payload CMS uses PBKDF2 for password hashing
+// This function replicates Payload's authenticateLocalStrategy
+async function verifyPayloadPassword(doc: any, password: string): Promise<boolean> {
+  try {
+    const { hash, salt } = doc
+    if (typeof salt !== 'string' || typeof hash !== 'string') {
+      return false
+    }
+
+    return await new Promise((resolve) => {
+      crypto.pbkdf2(password, salt, 25000, 512, 'sha256', (err, hashBuffer) => {
+        if (err) {
+          resolve(false)
+        } else {
+          resolve(scmp(hashBuffer, Buffer.from(hash, 'hex')))
+        }
+      })
+    })
+  } catch {
+    return false
+  }
+}
+
+// Verify password - tries bcrypt first (legacy), then PBKDF2
+async function verifyPassword(doc: any, password: string): Promise<boolean> {
+  // If there's a password field (bcrypt), use it
+  if (doc.password && typeof doc.password === 'string' && doc.password.startsWith('$2')) {
+    console.log('🔍 [AUTH] Using bcrypt verification')
+    return await verifyBcryptPassword(doc.password, password)
+  }
+
+  // Otherwise, use PBKDF2 (hash + salt fields)
+  if (doc.hash && doc.salt) {
+    console.log('🔍 [AUTH] Using PBKDF2 verification')
+    return await verifyPayloadPassword(doc, password)
+  }
+
+  console.log('❌ [AUTH] No valid password format found')
+  return false
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
@@ -33,28 +86,39 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const payload = await getPayload({ config })
         const isAdmin = credentials.isAdmin === 'true' || credentials.isAdmin === true
 
+        console.log('🔍 [AUTH] Starting authentication:', {
+          email: credentials.email,
+          isAdmin,
+          hasPassword: !!credentials.password,
+        })
+
         // Si c'est un admin, on cherche dans la collection users de Payload
         if (isAdmin) {
-          // Access MongoDB directly to get the password field
-          // Payload's find() filters out password for security, so we need direct DB access
-          const db = payload.db
-          const User = (db as any).collections['users']
+          // Access Mongoose model directly to get hash and salt fields
+          const UserModel = payload.db.collections['users']
 
-          const user = await User.findOne({ email: credentials.email as string })
+          console.log('🔍 [AUTH] Searching in users collection...')
+
+          // Query for user with all password fields (bcrypt password, or hash + salt)
+          const user = await UserModel.findOne({ email: credentials.email as string })
+            .select('+password +hash +salt')
+            .lean()
+
+          console.log('🔍 [AUTH] User found:', {
+            found: !!user,
+            hasPassword: !!(user as any)?.password,
+            hasHash: !!(user as any)?.hash,
+            hasSalt: !!(user as any)?.salt,
+          })
 
           if (!user) {
             throw new Error('Email ou mot de passe incorrect')
           }
 
-          // Vérifier le mot de passe
-          if (!user.password) {
-            throw new Error('Utilisateur invalide')
-          }
+          // Verify password - supports both bcrypt (legacy) and PBKDF2 (Payload)
+          const isValidPassword = await verifyPassword(user, credentials.password as string)
 
-          const isValidPassword = await bcrypt.compare(
-            credentials.password as string,
-            user.password
-          )
+          console.log('🔍 [AUTH] Password verification result:', isValidPassword)
 
           if (!isValidPassword) {
             throw new Error('Email ou mot de passe incorrect')
@@ -70,25 +134,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         // Sinon, c'est un client (collection customers de Payload)
-        // Access MongoDB directly to get the password field
-        const db = payload.db
-        const Customer = (db as any).collections['customers']
+        // Access Mongoose model directly to get all password fields
+        const CustomerModel = payload.db.collections['customers']
 
-        const customer = await Customer.findOne({ email: credentials.email as string })
+        // Query for customer with all password fields (bcrypt password, or hash + salt)
+        const customer = await CustomerModel.findOne({ email: credentials.email as string })
+          .select('+password +hash +salt')
+          .lean()
 
         if (!customer) {
           throw new Error('Email ou mot de passe incorrect')
         }
 
-        // Vérifier le mot de passe
-        if (!customer.password) {
-          throw new Error('Client invalide')
-        }
-
-        const isValidPassword = await bcrypt.compare(
-          credentials.password as string,
-          customer.password
-        )
+        // Verify password - supports both bcrypt (legacy) and PBKDF2 (Payload)
+        const isValidPassword = await verifyPassword(customer, credentials.password as string)
 
         if (!isValidPassword) {
           throw new Error('Email ou mot de passe incorrect')
