@@ -125,10 +125,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
 
           return {
-            id: user._id.toString(),
+            id: (user as any)._id.toString(),
             email: user.email,
             name: user.name,
-            role: user.role || 'admin',
+            role: (user as any).role || 'admin',
             isAdmin: true,
           }
         }
@@ -154,9 +154,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         return {
-          id: customer._id.toString(),
+          id: (customer as any)._id.toString(),
           email: customer.email,
-          name: customer.name || customer.firstName + ' ' + customer.lastName,
+          name: (customer as any).name || (customer as any).firstName + ' ' + (customer as any).lastName,
           role: 'customer',
           isAdmin: false,
         }
