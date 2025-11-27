@@ -1,18 +1,8 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
-import { MongoDBAdapter } from '@auth/mongodb-adapter'
-import { MongoClient } from 'mongodb'
 import bcrypt from 'bcrypt'
 
-// MongoDB client for NextAuth adapter
-const client = new MongoClient(process.env.DATABASE_URL!)
-const clientPromise = client.connect()
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: MongoDBAdapter(clientPromise, {
-    databaseName: 'exclusives_stickers',
-  }),
-
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
