@@ -75,7 +75,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         // Sinon, c'est un client (collection customers de Payload)
         const customers = await payload.find({
-          collection: 'customers',
+          collection: 'customers' as any,
           where: {
             email: {
               equals: credentials.email as string,
