@@ -2,7 +2,6 @@ import type { CollectionConfig } from 'payload'
 
 export const Orders: CollectionConfig = {
   slug: 'orders',
-  defaultDepth: 0, // Empêche la population automatique des relations
   admin: {
     useAsTitle: 'orderNumber',
     defaultColumns: ['orderNumber', 'customerName', 'status', 'totalCents', 'createdAt'],
