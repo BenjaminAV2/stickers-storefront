@@ -84,7 +84,7 @@ export async function GET() {
 
     // Enrichir avec le nombre de commandes par client
     const enrichedOrders = await Promise.all(
-      recentOrders.docs.map(async (order) => {
+      recentOrders.docs.map(async (order: any) => {
         const customerOrders = await payload.count({
           collection: 'orders',
           where: {
