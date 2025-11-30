@@ -31,12 +31,12 @@ export async function GET() {
         year: 'numeric',
       })
 
-      const monthOrders = allOrders.docs.filter(order => {
+      const monthOrders = allOrders.docs.filter((order: any) => {
         const paidAt = new Date(order.paidAt as string)
         return paidAt >= monthStart && paidAt <= monthEnd
       })
 
-      const monthRevenue = monthOrders.reduce((sum, order) => sum + (order.totalCents || 0), 0)
+      const monthRevenue = monthOrders.reduce((sum, order: any) => sum + (order.totalCents || 0), 0)
       const monthOrderCount = monthOrders.length
       const monthAverage = monthOrderCount > 0 ? monthRevenue / monthOrderCount : 0
 
@@ -60,12 +60,12 @@ export async function GET() {
       const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate())
       const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000)
 
-      const dayOrders = allOrders.docs.filter(order => {
+      const dayOrders = allOrders.docs.filter((order: any) => {
         const paidAt = new Date(order.paidAt as string)
         return paidAt >= dayStart && paidAt < dayEnd
       })
 
-      const dayRevenue = dayOrders.reduce((sum, order) => sum + (order.totalCents || 0), 0)
+      const dayRevenue = dayOrders.reduce((sum, order: any) => sum + (order.totalCents || 0), 0)
       const dayOrderCount = dayOrders.length
       const dayAverage = dayOrderCount > 0 ? dayRevenue / dayOrderCount : 0
 
@@ -101,12 +101,12 @@ export async function GET() {
       const currentDayStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())
       const currentDayEnd = new Date(currentDayStart.getTime() + 24 * 60 * 60 * 1000)
 
-      const currentDayOrders = allOrders.docs.filter(order => {
+      const currentDayOrders = allOrders.docs.filter((order: any) => {
         const paidAt = new Date(order.paidAt as string)
         return paidAt >= currentDayStart && paidAt < currentDayEnd
       })
 
-      const currentDayRevenue = currentDayOrders.reduce((sum, order) => sum + (order.totalCents || 0), 0)
+      const currentDayRevenue = currentDayOrders.reduce((sum, order: any) => sum + (order.totalCents || 0), 0)
       const currentDayOrderCount = currentDayOrders.length
       const currentDayAvg = currentDayOrderCount > 0 ? currentDayRevenue / currentDayOrderCount : 0
 
@@ -114,12 +114,12 @@ export async function GET() {
       const previousDayStart = new Date(previousDate.getFullYear(), previousDate.getMonth(), previousDate.getDate())
       const previousDayEnd = new Date(previousDayStart.getTime() + 24 * 60 * 60 * 1000)
 
-      const previousDayOrders = allOrders.docs.filter(order => {
+      const previousDayOrders = allOrders.docs.filter((order: any) => {
         const paidAt = new Date(order.paidAt as string)
         return paidAt >= previousDayStart && paidAt < previousDayEnd
       })
 
-      const previousDayRevenue = previousDayOrders.reduce((sum, order) => sum + (order.totalCents || 0), 0)
+      const previousDayRevenue = previousDayOrders.reduce((sum, order: any) => sum + (order.totalCents || 0), 0)
       const previousDayOrderCount = previousDayOrders.length
       const previousDayAvg = previousDayOrderCount > 0 ? previousDayRevenue / previousDayOrderCount : 0
 
