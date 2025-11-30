@@ -850,28 +850,6 @@ export const Orders: CollectionConfig = {
 
         return data
       },
-      // Importer depuis le fichier séparé
-      async (args) => {
-        const { trackStatusHistoryHook } = await import('../hooks/trackStatusHistory')
-        return trackStatusHistoryHook(args)
-      },
-    ],
-    afterChange: [
-      // Générer la facture au paiement
-      async (args) => {
-        const { generateInvoiceHook } = await import('../hooks/generateInvoice')
-        return generateInvoiceHook(args)
-      },
-      // Générer le bon de livraison en fabrication
-      async (args) => {
-        const { generateDeliveryNoteHook } = await import('../hooks/generateDeliveryNote')
-        return generateDeliveryNoteHook(args)
-      },
-      // Envoyer l'email de notification de statut
-      async (args) => {
-        const { sendStatusEmailHook } = await import('../hooks/sendStatusEmail')
-        return sendStatusEmailHook(args)
-      },
     ],
   },
 }
