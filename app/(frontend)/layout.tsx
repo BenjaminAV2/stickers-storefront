@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import Header from "@/components/Header";
 import { CartProvider } from "@/contexts/CartContext";
 import { Toaster } from "react-hot-toast";
@@ -23,14 +23,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default function FrontendLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="fr" className="scroll-smooth">
-      <body className={`${inter.className} antialiased bg-gray-50`}>
+    <html lang="fr" className="scroll-smooth" suppressHydrationWarning>
+      <body className={`${inter.className} antialiased bg-gray-50`} suppressHydrationWarning>
         <CartProvider>
           <Header />
           {children}

@@ -8,10 +8,10 @@ const CustomNav: React.FC = () => {
     <div className="custom-nav-links" style={{ padding: '1rem', borderBottom: '1px solid #e5e5e5' }}>
       <nav style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
         <Link
-          href="/dashboard"
+          href="/dashboard-v2"
           style={{
             padding: '0.5rem 1rem',
-            backgroundColor: '#5b40d7',
+            backgroundColor: '#5750F1',
             color: 'white',
             borderRadius: '4px',
             textDecoration: 'none',
@@ -22,10 +22,10 @@ const CustomNav: React.FC = () => {
           📊 Dashboard
         </Link>
         <Link
-          href="/statistics"
+          href="/statistics-v2"
           style={{
             padding: '0.5rem 1rem',
-            backgroundColor: '#5b40d7',
+            backgroundColor: '#5750F1',
             color: 'white',
             borderRadius: '4px',
             textDecoration: 'none',
@@ -36,10 +36,10 @@ const CustomNav: React.FC = () => {
           📈 Statistiques
         </Link>
         <Link
-          href="/orders-list"
+          href="/orders-list-v2"
           style={{
             padding: '0.5rem 1rem',
-            backgroundColor: '#5b40d7',
+            backgroundColor: '#5750F1',
             color: 'white',
             borderRadius: '4px',
             textDecoration: 'none',
@@ -48,6 +48,20 @@ const CustomNav: React.FC = () => {
           }}
         >
           📋 Liste Commandes
+        </Link>
+        <Link
+          href="/admin-custom/orders"
+          style={{
+            padding: '0.5rem 1rem',
+            backgroundColor: '#2563eb',
+            color: 'white',
+            borderRadius: '4px',
+            textDecoration: 'none',
+            fontSize: '14px',
+            fontWeight: '500'
+          }}
+        >
+          🚀 Commandes (Vue Détails)
         </Link>
       </nav>
     </div>

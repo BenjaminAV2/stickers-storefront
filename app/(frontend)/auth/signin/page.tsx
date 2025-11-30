@@ -32,7 +32,9 @@ function SignInContent() {
       if (result?.error) {
         setError('Email ou mot de passe incorrect')
       } else {
-        router.push(callbackUrl)
+        // Redirect admins to /admin, customers to their callbackUrl or homepage
+        const redirectUrl = isAdmin ? '/admin' : callbackUrl
+        router.push(redirectUrl)
         router.refresh()
       }
     } catch (error) {

@@ -2,26 +2,31 @@ import type { CollectionConfig } from 'payload'
 
 export const Orders: CollectionConfig = {
   slug: 'orders',
+  defaultDepth: 0, // Empêche la population automatique des relations
   admin: {
     useAsTitle: 'orderNumber',
-    defaultColumns: ['orderNumber', 'customer', 'status', 'totalCents', 'createdAt'],
+    defaultColumns: ['orderNumber', 'customerName', 'status', 'totalCents', 'createdAt'],
     description: 'Gestion des commandes',
+    listSearchableFields: ['orderNumber', 'customerName', 'customerEmail'],
   },
   access: {
     read: ({ req: { user } }) => {
-      if (user?.collection === 'users') return true // Admin can read all
-      if (user?.collection === 'customers') {
+      // Admin users can read all
+      if (user && 'role' in user && user.role === 'admin') return true
+
+      // Customers can only read their own orders
+      if (user && !('role' in user)) {
         return {
-          customer: {
-            equals: user.id,
+          customerEmail: {
+            equals: (user as any).email,
           },
         }
       }
       return false
     },
     create: ({ req: { user } }) => !!user,
-    update: ({ req: { user } }) => user?.collection === 'users', // Only admin can update
-    delete: ({ req: { user } }) => user?.collection === 'users', // Only admin can delete
+    update: ({ req: { user } }) => user && 'role' in user && user.role === 'admin',
+    delete: ({ req: { user } }) => user && 'role' in user && user.role === 'admin',
   },
   fields: [
     // Order Reference
@@ -45,15 +50,8 @@ export const Orders: CollectionConfig = {
     },
 
     // Customer Information
-    {
-      name: 'customer',
-      type: 'relationship',
-      relationTo: 'customers' as any,
-      required: true,
-      admin: {
-        position: 'sidebar',
-      },
-    },
+    // NOTE: customer relationship field removed due to null reference issues with Payload 3.x
+    // Use customerEmail instead to identify customer
     {
       name: 'customerEmail',
       type: 'email',
@@ -105,6 +103,7 @@ export const Orders: CollectionConfig = {
       admin: {
         readOnly: true,
         description: 'Historique des changements de statut',
+        position: 'sidebar',
       },
       fields: [
         {
@@ -134,13 +133,17 @@ export const Orders: CollectionConfig = {
       type: 'array',
       required: true,
       minRows: 1,
+      admin: {
+        description: 'Articles de la commande',
+      },
       fields: [
         {
           name: 'productReference',
           type: 'text',
           required: true,
           admin: {
-            description: 'Référence produit',
+            description: 'Réf',
+            width: '20%',
           },
         },
         {
@@ -148,21 +151,8 @@ export const Orders: CollectionConfig = {
           type: 'text',
           required: true,
           admin: {
-            description: 'Nom du produit',
-          },
-        },
-        {
-          name: 'productId',
-          type: 'text',
-          admin: {
-            description: 'ID Medusa du produit',
-          },
-        },
-        {
-          name: 'variantId',
-          type: 'text',
-          admin: {
-            description: 'ID Medusa de la variante',
+            description: 'Produit',
+            width: '30%',
           },
         },
         {
@@ -170,7 +160,8 @@ export const Orders: CollectionConfig = {
           type: 'text',
           required: true,
           admin: {
-            description: 'Taille (ex: 10x10cm)',
+            description: 'Taille',
+            width: '15%',
           },
         },
         {
@@ -184,7 +175,8 @@ export const Orders: CollectionConfig = {
             { label: 'Rectangle', value: 'rectangle' },
           ],
           admin: {
-            description: 'Forme du support',
+            description: 'Forme',
+            width: '15%',
           },
         },
         {
@@ -192,6 +184,10 @@ export const Orders: CollectionConfig = {
           type: 'number',
           required: true,
           min: 1,
+          admin: {
+            description: 'Qté',
+            width: '10%',
+          },
         },
         {
           name: 'unitPriceCents',
@@ -199,7 +195,8 @@ export const Orders: CollectionConfig = {
           required: true,
           min: 0,
           admin: {
-            description: 'Prix unitaire HT en centimes',
+            description: 'Prix unit.',
+            width: '10%',
           },
         },
         {
@@ -208,15 +205,8 @@ export const Orders: CollectionConfig = {
           required: true,
           min: 0,
           admin: {
-            description: 'Prix total HT en centimes',
-          },
-        },
-        {
-          name: 'batVisual',
-          type: 'upload',
-          relationTo: 'media',
-          admin: {
-            description: 'Visuel BAT (Bon à tirer)',
+            description: 'Total',
+            width: '10%',
           },
         },
         {
@@ -224,17 +214,96 @@ export const Orders: CollectionConfig = {
           type: 'checkbox',
           defaultValue: false,
           admin: {
-            description: 'BAT approuvé par le client',
+            description: 'BAT ✓',
+            width: '10%',
           },
         },
         {
           name: 'batApprovedAt',
           type: 'date',
+          admin: {
+            description: 'Date BAT',
+            width: '15%',
+            condition: (data, siblingData) => siblingData?.batApproved,
+          },
+        },
+        {
+          name: 'productId',
+          type: 'text',
+          admin: {
+            description: 'ID Medusa du produit',
+            hidden: true,
+          },
+        },
+        {
+          name: 'variantId',
+          type: 'text',
+          admin: {
+            description: 'ID Medusa de la variante',
+            hidden: true,
+          },
         },
       ],
     },
 
-    // Pricing
+    // Pricing - Compact grouped display
+    {
+      name: 'pricing',
+      type: 'group',
+      admin: {
+        description: 'Tarification',
+      },
+      fields: [
+        {
+          name: 'subtotalHT',
+          type: 'number',
+          required: true,
+          min: 0,
+          admin: {
+            description: 'Sous-total HT',
+            width: '50%',
+          },
+        },
+        {
+          name: 'shippingCents',
+          type: 'number',
+          min: 0,
+          admin: {
+            description: 'Livraison',
+            width: '50%',
+          },
+        },
+        {
+          name: 'taxCents',
+          type: 'number',
+          min: 0,
+          admin: {
+            description: 'TVA',
+            width: '50%',
+          },
+        },
+        {
+          name: 'discountCents',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            description: 'Réduction',
+            width: '50%',
+          },
+        },
+        {
+          name: 'totalCents',
+          type: 'number',
+          required: true,
+          min: 0,
+          admin: {
+            description: 'Total TTC',
+            width: '100%',
+          },
+        },
+      ],
+    },
+    // Keep original fields for backward compatibility
     {
       name: 'subtotalHT',
       type: 'number',
@@ -242,6 +311,7 @@ export const Orders: CollectionConfig = {
       min: 0,
       admin: {
         description: 'Sous-total HT en centimes',
+        hidden: true,
       },
     },
     {
@@ -250,6 +320,7 @@ export const Orders: CollectionConfig = {
       min: 0,
       admin: {
         description: 'Frais de livraison en centimes',
+        hidden: true,
       },
     },
     {
@@ -258,6 +329,7 @@ export const Orders: CollectionConfig = {
       min: 0,
       admin: {
         description: 'TVA en centimes (20%)',
+        hidden: true,
       },
     },
     {
@@ -266,6 +338,7 @@ export const Orders: CollectionConfig = {
       defaultValue: 0,
       admin: {
         description: 'Réduction en centimes',
+        hidden: true,
       },
     },
     {
@@ -275,6 +348,7 @@ export const Orders: CollectionConfig = {
       min: 0,
       admin: {
         description: 'Total TTC en centimes',
+        hidden: true,
       },
     },
 
@@ -285,58 +359,108 @@ export const Orders: CollectionConfig = {
       required: true,
       admin: {
         description: 'Méthode de livraison (Colissimo, Chronopost, etc.)',
+        width: '50%',
+      },
+    },
+    {
+      name: 'trackingNumber',
+      type: 'text',
+      admin: {
+        description: 'Numéro de suivi transporteur',
+        width: '50%',
+      },
+    },
+    {
+      name: 'trackingUrl',
+      type: 'text',
+      admin: {
+        description: 'URL de suivi',
+        width: '50%',
       },
     },
     {
       name: 'shippingAddress',
       type: 'group',
+      admin: {
+        description: 'Adresse de livraison',
+      },
       fields: [
         {
           name: 'firstName',
           type: 'text',
           required: true,
+          admin: {
+            width: '50%',
+          },
         },
         {
           name: 'lastName',
           type: 'text',
           required: true,
+          admin: {
+            width: '50%',
+          },
         },
         {
           name: 'company',
           type: 'text',
+          admin: {
+            width: '100%',
+          },
         },
         {
           name: 'address1',
           type: 'text',
           required: true,
+          admin: {
+            width: '100%',
+          },
         },
         {
           name: 'address2',
           type: 'text',
+          admin: {
+            width: '100%',
+          },
         },
         {
           name: 'city',
           type: 'text',
           required: true,
+          admin: {
+            width: '50%',
+          },
         },
         {
           name: 'postalCode',
           type: 'text',
           required: true,
-        },
-        {
-          name: 'province',
-          type: 'text',
+          admin: {
+            width: '25%',
+          },
         },
         {
           name: 'countryCode',
           type: 'text',
           required: true,
+          admin: {
+            width: '25%',
+          },
+        },
+        {
+          name: 'province',
+          type: 'text',
+          admin: {
+            width: '50%',
+          },
         },
         {
           name: 'phone',
           type: 'text',
           required: true,
+          admin: {
+            width: '50%',
+          },
         },
       ],
     },
@@ -379,53 +503,108 @@ export const Orders: CollectionConfig = {
         {
           name: 'firstName',
           type: 'text',
+          admin: {
+            width: '50%',
+          },
         },
         {
           name: 'lastName',
           type: 'text',
+          admin: {
+            width: '50%',
+          },
         },
         {
           name: 'company',
           type: 'text',
+          admin: {
+            width: '100%',
+          },
         },
         {
           name: 'address1',
           type: 'text',
+          admin: {
+            width: '100%',
+          },
         },
         {
           name: 'address2',
           type: 'text',
+          admin: {
+            width: '100%',
+          },
         },
         {
           name: 'city',
           type: 'text',
+          admin: {
+            width: '50%',
+          },
         },
         {
           name: 'postalCode',
           type: 'text',
+          admin: {
+            width: '25%',
+          },
         },
         {
           name: 'countryCode',
           type: 'text',
+          admin: {
+            width: '25%',
+          },
         },
       ],
     },
-    {
-      name: 'trackingNumber',
-      type: 'text',
-      admin: {
-        description: 'Numéro de suivi transporteur',
-      },
-    },
-    {
-      name: 'trackingUrl',
-      type: 'text',
-      admin: {
-        description: 'URL de suivi',
-      },
-    },
 
-    // Payment Information
+    // Payment Information - Grouped for compact display
+    {
+      name: 'paymentInfo',
+      type: 'group',
+      admin: {
+        description: 'Informations de paiement',
+        position: 'sidebar',
+      },
+      fields: [
+        {
+          name: 'paymentMethod',
+          type: 'select',
+          required: true,
+          options: [
+            { label: 'Carte bancaire (Stripe)', value: 'stripe' },
+            { label: 'PayPal', value: 'paypal' },
+          ],
+        },
+        {
+          name: 'paymentStatus',
+          type: 'select',
+          defaultValue: 'pending',
+          options: [
+            { label: 'En attente', value: 'pending' },
+            { label: 'Payé', value: 'paid' },
+            { label: 'Échoué', value: 'failed' },
+            { label: 'Remboursé', value: 'refunded' },
+          ],
+        },
+        {
+          name: 'paidAt',
+          type: 'date',
+          admin: {
+            description: 'Date paiement',
+          },
+        },
+        {
+          name: 'paymentIntentId',
+          type: 'text',
+          admin: {
+            description: 'ID Transaction',
+          },
+        },
+      ],
+    },
+    // Keep original fields for backward compatibility
     {
       name: 'paymentMethod',
       type: 'select',
@@ -436,6 +615,7 @@ export const Orders: CollectionConfig = {
       ],
       admin: {
         position: 'sidebar',
+        hidden: true,
       },
     },
     {
@@ -450,6 +630,7 @@ export const Orders: CollectionConfig = {
       ],
       admin: {
         position: 'sidebar',
+        hidden: true,
       },
     },
     {
@@ -457,6 +638,7 @@ export const Orders: CollectionConfig = {
       type: 'date',
       admin: {
         description: 'Date et heure de validation du paiement',
+        hidden: true,
       },
     },
     {
@@ -464,6 +646,7 @@ export const Orders: CollectionConfig = {
       type: 'text',
       admin: {
         description: 'Stripe Payment Intent ID',
+        hidden: true,
       },
     },
 
@@ -473,6 +656,9 @@ export const Orders: CollectionConfig = {
       type: 'group',
       admin: {
         description: 'Informations de remboursement',
+        condition: (data) => {
+          return data?.refund?.isRefunded || data?.paymentStatus === 'refunded'
+        },
       },
       fields: [
         {
@@ -514,12 +700,55 @@ export const Orders: CollectionConfig = {
       ],
     },
 
-    // Documents
+    // Documents - Compact grouped
+    {
+      name: 'documents',
+      type: 'group',
+      admin: {
+        description: 'Documents',
+      },
+      fields: [
+        {
+          name: 'invoiceNumber',
+          type: 'text',
+          admin: {
+            description: 'N° facture',
+            width: '50%',
+          },
+        },
+        {
+          name: 'invoiceUrl',
+          type: 'text',
+          admin: {
+            description: 'URL facture',
+            width: '50%',
+          },
+        },
+        {
+          name: 'deliveryNoteNumber',
+          type: 'text',
+          admin: {
+            description: 'N° bon de livraison',
+            width: '50%',
+          },
+        },
+        {
+          name: 'deliveryNoteUrl',
+          type: 'text',
+          admin: {
+            description: 'URL bon de livraison',
+            width: '50%',
+          },
+        },
+      ],
+    },
+    // Keep original fields for backward compatibility
     {
       name: 'invoiceUrl',
       type: 'text',
       admin: {
         description: 'URL de la facture PDF',
+        hidden: true,
       },
     },
     {
@@ -527,6 +756,7 @@ export const Orders: CollectionConfig = {
       type: 'text',
       admin: {
         description: 'Numéro de facture',
+        hidden: true,
       },
     },
     {
@@ -534,6 +764,7 @@ export const Orders: CollectionConfig = {
       type: 'text',
       admin: {
         description: 'URL du bon de livraison PDF',
+        hidden: true,
       },
     },
     {
@@ -541,15 +772,43 @@ export const Orders: CollectionConfig = {
       type: 'text',
       admin: {
         description: 'Numéro du bon de livraison',
+        hidden: true,
       },
     },
 
-    // Internal Notes
+    // Internal Notes - Compact
+    {
+      name: 'notes',
+      type: 'group',
+      admin: {
+        description: 'Notes',
+      },
+      fields: [
+        {
+          name: 'customerNotes',
+          type: 'textarea',
+          admin: {
+            description: 'Notes du client',
+            rows: 2,
+          },
+        },
+        {
+          name: 'internalNotes',
+          type: 'textarea',
+          admin: {
+            description: 'Notes internes (admin)',
+            rows: 2,
+          },
+        },
+      ],
+    },
+    // Keep original fields for backward compatibility
     {
       name: 'internalNotes',
       type: 'textarea',
       admin: {
         description: 'Notes internes (visible admin uniquement)',
+        hidden: true,
       },
     },
     {
@@ -557,6 +816,7 @@ export const Orders: CollectionConfig = {
       type: 'textarea',
       admin: {
         description: 'Notes du client (commentaire commande)',
+        hidden: true,
       },
     },
 
@@ -589,18 +849,29 @@ export const Orders: CollectionConfig = {
           data.orderNumber = `ORD-${timestamp}-${random}`
         }
 
-        // Track status changes in history
-        if (req.context?.previousStatus && data.status !== req.context.previousStatus) {
-          if (!data.statusHistory) data.statusHistory = []
-          data.statusHistory.push({
-            status: data.status,
-            changedAt: new Date().toISOString(),
-            changedBy: req.user?.email || 'system',
-            note: `Status changed from ${req.context.previousStatus} to ${data.status}`,
-          })
-        }
-
         return data
+      },
+      // Importer depuis le fichier séparé
+      async (args) => {
+        const { trackStatusHistoryHook } = await import('../hooks/trackStatusHistory')
+        return trackStatusHistoryHook(args)
+      },
+    ],
+    afterChange: [
+      // Générer la facture au paiement
+      async (args) => {
+        const { generateInvoiceHook } = await import('../hooks/generateInvoice')
+        return generateInvoiceHook(args)
+      },
+      // Générer le bon de livraison en fabrication
+      async (args) => {
+        const { generateDeliveryNoteHook } = await import('../hooks/generateDeliveryNote')
+        return generateDeliveryNoteHook(args)
+      },
+      // Envoyer l'email de notification de statut
+      async (args) => {
+        const { sendStatusEmailHook } = await import('../hooks/sendStatusEmail')
+        return sendStatusEmailHook(args)
       },
     ],
   },
