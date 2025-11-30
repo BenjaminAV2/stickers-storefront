@@ -25,8 +25,8 @@ export const Orders: CollectionConfig = {
       return false
     },
     create: ({ req: { user } }) => !!user,
-    update: ({ req: { user } }) => user && 'role' in user && user.role === 'admin',
-    delete: ({ req: { user } }) => user && 'role' in user && user.role === 'admin',
+    update: ({ req: { user } }) => !!(user && 'role' in user && user.role === 'admin'),
+    delete: ({ req: { user } }) => !!(user && 'role' in user && user.role === 'admin'),
   },
   fields: [
     // Order Reference
