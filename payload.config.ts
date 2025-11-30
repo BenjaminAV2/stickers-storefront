@@ -12,8 +12,6 @@ import { Pages } from './payload/collections/Pages'
 import { Media } from './payload/collections/Media'
 import { PricingSettings } from './payload/collections/PricingSettings'
 import { Orders } from './payload/collections/Orders'
-import { OrdersMinimal } from './payload/collections/Orders-minimal-test'
-import { OrdersUltraMinimal } from './payload/collections/Orders-ultra-minimal'
 import { ShippingProviders } from './payload/collections/ShippingProviders'
 import { Categories } from './payload/collections/Categories'
 import { Products } from './payload/collections/Products'
@@ -40,8 +38,6 @@ export default buildConfig({
     Users,
     Customers,
     Orders,
-    OrdersMinimal, // Collection de test minimale
-    OrdersUltraMinimal, // Collection ultra-minimale pour tester le bug
     Products,
     Categories,
     Pages,
