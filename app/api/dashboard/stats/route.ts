@@ -36,7 +36,7 @@ export async function GET() {
     const averageOrder = orders30Days > 0 ? revenue30Days / orders30Days : 0
 
     // Commandes du jour
-    const ordersToday = ordersLast30Days.docs.filter(order => {
+    const ordersToday = ordersLast30Days.docs.filter((order: any) => {
       const paidAt = new Date(order.paidAt as string)
       return paidAt >= startOfDay
     }).length
@@ -53,7 +53,7 @@ export async function GET() {
       const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate())
       const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000)
 
-      const dayOrders = ordersLast30Days.docs.filter(order => {
+      const dayOrders = ordersLast30Days.docs.filter((order: any) => {
         const paidAt = new Date(order.paidAt as string)
         return paidAt >= dayStart && paidAt < dayEnd
       })
