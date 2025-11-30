@@ -2,7 +2,6 @@ import { CollectionConfig } from 'payload'
 
 export const Products: CollectionConfig = {
   slug: 'products',
-  defaultDepth: 0, // Prevent automatic relationship population
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'categorySlugs', 'basePrice', 'isActive'],
