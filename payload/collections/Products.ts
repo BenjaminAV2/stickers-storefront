@@ -2,9 +2,10 @@ import { CollectionConfig } from 'payload'
 
 export const Products: CollectionConfig = {
   slug: 'products',
+  defaultDepth: 0, // Prevent automatic relationship population
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'category', 'basePrice', 'isActive'],
+    defaultColumns: ['title', 'categorySlugs', 'basePrice', 'isActive'],
   },
   access: {
     read: () => true,
@@ -47,15 +48,30 @@ export const Products: CollectionConfig = {
     },
 
     // Category
+    // NOTE: Made optional temporarily due to Payload 3.x relationship traversal bug
     {
       name: 'category',
       type: 'relationship',
       relationTo: 'categories' as any,
-      required: true,
+      required: false, // Changed from true to false
       hasMany: true,
       admin: {
         description: 'Catégories du produit',
       },
+    },
+    // Category slugs as text array (workaround for relationship bug)
+    {
+      name: 'categorySlugs',
+      type: 'array',
+      admin: {
+        description: 'Slugs des catégories (ex: vinyle-blanc, vinyle-transparent)',
+      },
+      fields: [
+        {
+          name: 'slug',
+          type: 'text',
+        },
+      ],
     },
 
     // Description
@@ -79,17 +95,37 @@ export const Products: CollectionConfig = {
     },
 
     // Images
+    // NOTE: Made optional temporarily due to Payload 3.x upload relationship bug
     {
       name: 'images',
       type: 'array',
-      required: true,
-      minRows: 1,
+      required: false, // Changed from true to false
+      minRows: 0, // Changed from 1 to 0
       fields: [
         {
           name: 'image',
           type: 'upload',
           relationTo: 'media',
-          required: true,
+          required: false, // Changed from true to false
+        },
+        {
+          name: 'alt',
+          type: 'text',
+          localized: true,
+        },
+      ],
+    },
+    // Image URLs as text (workaround for upload relationship bug)
+    {
+      name: 'imageUrls',
+      type: 'array',
+      admin: {
+        description: 'URLs des images (temporaire, en attendant fix Media)',
+      },
+      fields: [
+        {
+          name: 'url',
+          type: 'text',
         },
         {
           name: 'alt',

@@ -42,7 +42,30 @@ export const Media: CollectionConfig = {
       required: true,
       localized: true,
       admin: {
-        description: 'Alternative text for accessibility',
+        description: 'Texte alternatif pour l\'accessibilité et le SEO',
+      },
+    },
+    {
+      name: 'title',
+      type: 'text',
+      localized: true,
+      admin: {
+        description: 'Titre de l\'image',
+      },
+    },
+    {
+      name: 'caption',
+      type: 'textarea',
+      localized: true,
+      admin: {
+        description: 'Légende de l\'image',
+      },
+    },
+    {
+      name: 'credit',
+      type: 'text',
+      admin: {
+        description: 'Crédit photo / source',
       },
     },
   ],
