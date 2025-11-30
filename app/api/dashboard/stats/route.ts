@@ -31,7 +31,7 @@ export async function GET() {
     })
 
     // Calculer les KPIs
-    const revenue30Days = ordersLast30Days.docs.reduce((sum, order) => sum + (order.totalCents || 0), 0)
+    const revenue30Days = ordersLast30Days.docs.reduce((sum, order: any) => sum + (order.totalCents || 0), 0)
     const orders30Days = ordersLast30Days.docs.length
     const averageOrder = orders30Days > 0 ? revenue30Days / orders30Days : 0
 
@@ -58,7 +58,7 @@ export async function GET() {
         return paidAt >= dayStart && paidAt < dayEnd
       })
 
-      const dayRevenue = dayOrders.reduce((sum, order) => sum + (order.totalCents || 0), 0)
+      const dayRevenue = dayOrders.reduce((sum, order: any) => sum + (order.totalCents || 0), 0)
       const dayOrderCount = dayOrders.length
       const dayAverage = dayOrderCount > 0 ? dayRevenue / dayOrderCount : 0
 
