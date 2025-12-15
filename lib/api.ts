@@ -1,37 +1,14 @@
 import { Product, ProductCategory, Cart, CartLineItem } from './types'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9000'
+const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ''
 
-// Cache for publishable API key
-let publishableApiKey: string | null = null
-
-// Fetch publishable API key from backend
+// Get publishable API key from environment variable
 async function getPublishableApiKey(): Promise<string> {
-  if (publishableApiKey) {
-    return publishableApiKey
+  if (!PUBLISHABLE_KEY) {
+    throw new Error('NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY is not configured')
   }
-
-  try {
-    const response = await fetch(`${API_URL}/publishable-key`, {
-      cache: 'force-cache', // Cache the key
-    })
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch publishable API key')
-    }
-
-    const data = await response.json()
-    publishableApiKey = data.publishable_key
-
-    if (!publishableApiKey) {
-      throw new Error('Publishable API key is missing from response')
-    }
-
-    return publishableApiKey
-  } catch (error) {
-    console.error('Error fetching publishable API key:', error)
-    throw error
-  }
+  return PUBLISHABLE_KEY
 }
 
 // Produits
