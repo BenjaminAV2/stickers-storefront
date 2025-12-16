@@ -10,23 +10,18 @@ import { Product } from '@/lib/types'
 import { getProducts } from '@/lib/api'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9000'
+const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ''
 
-async function getPublishableApiKey(): Promise<string> {
-  const response = await fetch(`${API_URL}/publishable-key`, {
-    cache: 'force-cache',
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch publishable API key')
+function getPublishableApiKey(): string {
+  if (!PUBLISHABLE_KEY) {
+    throw new Error('NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY is not configured')
   }
-
-  const data = await response.json()
-  return data.publishable_key
+  return PUBLISHABLE_KEY
 }
 
 async function getProductByHandle(handle: string): Promise<Product | null> {
   try {
-    const apiKey = await getPublishableApiKey()
+    const apiKey = getPublishableApiKey()
 
     const response = await fetch(
       `${API_URL}/store/products?handle=${handle}`,
@@ -69,8 +64,12 @@ export default async function ProductPage({
     notFound()
   }
 
-  // Use local product placeholder images (duplicated for slider testing)
-  const productImages = ['/product-placeholder.png', '/product-placeholder.png']
+  // Use product images from Medusa, or fallback to thumbnail, or placeholder
+  const productImages = product.images && product.images.length > 0
+    ? product.images.map(img => img.url)
+    : product.thumbnail
+      ? [product.thumbnail]
+      : ['/product-placeholder.png']
 
   const variantCount = product.variants?.length || 0
 
