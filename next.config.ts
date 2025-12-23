@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withPayload } from '@payloadcms/next/withPayload'
 
 const nextConfig: NextConfig = {
   images: {
@@ -8,8 +7,12 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'medusa-public-images.s3.eu-west-1.amazonaws.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'backend-production-f3de.up.railway.app',
+      },
     ],
   },
 };
 
-export default withPayload(nextConfig);
+export default nextConfig;

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 
+const MEDUSA_API_URL = process.env.NEXT_PUBLIC_MEDUSA_API_URL || 'https://backend-production-f3de.up.railway.app'
+
 export default function SignUpPage() {
   const router = useRouter()
 
@@ -29,7 +31,6 @@ export default function SignUpPage() {
     e.preventDefault()
     setError('')
 
-    // Validation
     if (formData.password !== formData.confirmPassword) {
       setError('Les mots de passe ne correspondent pas')
       return
@@ -43,8 +44,8 @@ export default function SignUpPage() {
     setLoading(true)
 
     try {
-      // Créer le client via l'API Payload
-      const response = await fetch('/api/customers', {
+      // Create customer via Medusa API
+      const response = await fetch(`${MEDUSA_API_URL}/store/customers`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,21 +53,20 @@ export default function SignUpPage() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
         }),
       })
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Erreur lors de la création du compte')
+        throw new Error(data.message || 'Erreur lors de la création du compte')
       }
 
-      // Connecter automatiquement l'utilisateur
+      // Auto sign in after registration
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
-        isAdmin: 'false',
         redirect: false,
       })
 

@@ -7,6 +7,7 @@ import type { ShippingProvider } from '@/lib/types/checkout'
 import { useFilteredShippers } from '@/hooks/useFilteredShippers'
 
 interface ShippingMethodSelectorProps {
+  cartId?: string | null
   countryCode: string
   postalCode: string
   onSelect: (provider: ShippingProvider) => void
@@ -14,12 +15,13 @@ interface ShippingMethodSelectorProps {
 }
 
 export function ShippingMethodSelector({
+  cartId,
   countryCode,
   postalCode,
   onSelect,
   selectedProvider,
 }: ShippingMethodSelectorProps) {
-  const { providers, loading, error } = useFilteredShippers(countryCode, postalCode, 'fr')
+  const { providers, loading, error } = useFilteredShippers(cartId, countryCode, postalCode, 'fr')
   const [selected, setSelected] = useState<string | undefined>(selectedProvider?.id)
 
   const handleSelect = (provider: ShippingProvider) => {
@@ -45,7 +47,22 @@ export function ShippingMethodSelector({
     )
   }
 
-  if (providers.length === 0) {
+  // Show message when cart not ready
+  if (!cartId) {
+    return (
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+        <Truck className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+        <p className="text-blue-800 font-medium">
+          Remplissez votre adresse pour voir les options de livraison
+        </p>
+        <p className="text-blue-700 text-sm mt-2">
+          Les modes de livraison s'afficheront une fois l'adresse complétée
+        </p>
+      </div>
+    )
+  }
+
+  if (providers.length === 0 && !loading) {
     return (
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
         <Truck className="w-12 h-12 text-yellow-600 mx-auto mb-4" />

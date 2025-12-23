@@ -32,7 +32,7 @@ export async function middleware(req: NextRequest) {
     isPublicRoute ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api/') ||
-    pathname.startsWith('/admin') || // Allow Payload CMS admin panel (has its own auth)
+    pathname.startsWith('/admin') || // Allow admin routes
     pathname.includes('.')
   ) {
     return NextResponse.next()

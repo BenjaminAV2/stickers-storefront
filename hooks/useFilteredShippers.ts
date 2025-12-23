@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { ShippingProvider } from '@/lib/types/checkout'
 
 interface UseFilteredShippersResult {
@@ -10,7 +10,12 @@ interface UseFilteredShippersResult {
   refetch: () => void
 }
 
+/**
+ * Hook to fetch shipping options from Medusa
+ * Requires a cartId to get available shipping options for that cart
+ */
 export function useFilteredShippers(
+  cartId?: string | null,
   country?: string,
   postalCode?: string,
   locale: string = 'fr'
@@ -19,8 +24,9 @@ export function useFilteredShippers(
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchProviders = async () => {
-    if (!country) {
+  const fetchProviders = useCallback(async () => {
+    // Need cartId to fetch shipping options from Medusa
+    if (!cartId) {
       setProviders([])
       return
     }
@@ -30,15 +36,10 @@ export function useFilteredShippers(
 
     try {
       const params = new URLSearchParams({
-        country,
-        locale,
+        cart_id: cartId,
       })
 
-      if (postalCode) {
-        params.append('postal_code', postalCode)
-      }
-
-      const response = await fetch(`/api/shipping-providers-filtered?${params.toString()}`)
+      const response = await fetch(`/api/medusa/shipping-options?${params.toString()}`)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -49,7 +50,7 @@ export function useFilteredShippers(
       if (data.success) {
         setProviders(data.providers)
       } else {
-        throw new Error(data.message || 'Failed to fetch shipping providers')
+        throw new Error(data.error || 'Failed to fetch shipping providers')
       }
     } catch (err) {
       console.error('Error fetching shipping providers:', err)
@@ -58,11 +59,11 @@ export function useFilteredShippers(
     } finally {
       setLoading(false)
     }
-  }
+  }, [cartId])
 
   useEffect(() => {
     fetchProviders()
-  }, [country, postalCode, locale])
+  }, [fetchProviders])
 
   return {
     providers,

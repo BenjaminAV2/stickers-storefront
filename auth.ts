@@ -1,59 +1,7 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
-import crypto from 'crypto'
-import bcrypt from 'bcrypt'
-// @ts-expect-error - no types available
-import scmp from 'scmp'
 
-// Verify password using bcrypt (legacy format)
-async function verifyBcryptPassword(passwordHash: string, password: string): Promise<boolean> {
-  try {
-    return await bcrypt.compare(password, passwordHash)
-  } catch {
-    return false
-  }
-}
-
-// Payload CMS uses PBKDF2 for password hashing
-// This function replicates Payload's authenticateLocalStrategy
-async function verifyPayloadPassword(doc: any, password: string): Promise<boolean> {
-  try {
-    const { hash, salt } = doc
-    if (typeof salt !== 'string' || typeof hash !== 'string') {
-      return false
-    }
-
-    return await new Promise((resolve) => {
-      crypto.pbkdf2(password, salt, 25000, 512, 'sha256', (err, hashBuffer) => {
-        if (err) {
-          resolve(false)
-        } else {
-          resolve(scmp(hashBuffer, Buffer.from(hash, 'hex')))
-        }
-      })
-    })
-  } catch {
-    return false
-  }
-}
-
-// Verify password - tries bcrypt first (legacy), then PBKDF2
-async function verifyPassword(doc: any, password: string): Promise<boolean> {
-  // If there's a password field (bcrypt), use it
-  if (doc.password && typeof doc.password === 'string' && doc.password.startsWith('$2')) {
-    console.log('🔍 [AUTH] Using bcrypt verification')
-    return await verifyBcryptPassword(doc.password, password)
-  }
-
-  // Otherwise, use PBKDF2 (hash + salt fields)
-  if (doc.hash && doc.salt) {
-    console.log('🔍 [AUTH] Using PBKDF2 verification')
-    return await verifyPayloadPassword(doc, password)
-  }
-
-  console.log('❌ [AUTH] No valid password format found')
-  return false
-}
+const MEDUSA_API_URL = process.env.NEXT_PUBLIC_MEDUSA_API_URL || 'https://backend-production-f3de.up.railway.app'
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
@@ -72,93 +20,58 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
-        isAdmin: { label: 'Is Admin', type: 'boolean' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Email et mot de passe requis')
         }
 
-        // Import Payload dynamically to avoid edge runtime issues
-        const { getPayload } = await import('payload')
-        const config = (await import('./payload.config')).default
-
-        const payload = await getPayload({ config })
-        const isAdmin = credentials.isAdmin === 'true' || credentials.isAdmin === true
-
-        console.log('🔍 [AUTH] Starting authentication:', {
-          email: credentials.email,
-          isAdmin,
-          hasPassword: !!credentials.password,
-        })
-
-        // Si c'est un admin, on cherche dans la collection users de Payload
-        if (isAdmin) {
-          // Access Mongoose model directly to get hash and salt fields
-          const UserModel = payload.db.collections['users']
-
-          console.log('🔍 [AUTH] Searching in users collection...')
-
-          // Query for user with all password fields (bcrypt password, or hash + salt)
-          const user = await UserModel.findOne({ email: credentials.email as string })
-            .select('+password +hash +salt')
-            .lean()
-
-          console.log('🔍 [AUTH] User found:', {
-            found: !!user,
-            hasPassword: !!(user as any)?.password,
-            hasHash: !!(user as any)?.hash,
-            hasSalt: !!(user as any)?.salt,
+        try {
+          // Authenticate with Medusa customer API
+          const response = await fetch(`${MEDUSA_API_URL}/auth/customer/emailpass`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
           })
 
-          if (!user) {
+          if (!response.ok) {
             throw new Error('Email ou mot de passe incorrect')
           }
 
-          // Verify password - supports both bcrypt (legacy) and PBKDF2 (Payload)
-          const isValidPassword = await verifyPassword(user, credentials.password as string)
+          const data = await response.json()
 
-          console.log('🔍 [AUTH] Password verification result:', isValidPassword)
+          if (data.token) {
+            // Get customer details
+            const customerResponse = await fetch(`${MEDUSA_API_URL}/store/customers/me`, {
+              headers: {
+                'Authorization': `Bearer ${data.token}`,
+              },
+            })
 
-          if (!isValidPassword) {
-            throw new Error('Email ou mot de passe incorrect')
+            if (customerResponse.ok) {
+              const customerData = await customerResponse.json()
+              const customer = customerData.customer
+
+              return {
+                id: customer.id,
+                email: customer.email,
+                name: `${customer.first_name || ''} ${customer.last_name || ''}`.trim() || customer.email,
+                role: 'customer',
+                isAdmin: false,
+                token: data.token,
+              }
+            }
           }
 
-          return {
-            id: (user as any)._id.toString(),
-            email: (user as any).email,
-            name: (user as any).name,
-            role: (user as any).role || 'admin',
-            isAdmin: true,
-          }
-        }
-
-        // Sinon, c'est un client (collection customers de Payload)
-        // Access Mongoose model directly to get all password fields
-        const CustomerModel = payload.db.collections['customers']
-
-        // Query for customer with all password fields (bcrypt password, or hash + salt)
-        const customer = await CustomerModel.findOne({ email: credentials.email as string })
-          .select('+password +hash +salt')
-          .lean()
-
-        if (!customer) {
+          throw new Error('Échec de l\'authentification')
+        } catch (error) {
+          console.error('[AUTH] Error:', error)
           throw new Error('Email ou mot de passe incorrect')
-        }
-
-        // Verify password - supports both bcrypt (legacy) and PBKDF2 (Payload)
-        const isValidPassword = await verifyPassword(customer, credentials.password as string)
-
-        if (!isValidPassword) {
-          throw new Error('Email ou mot de passe incorrect')
-        }
-
-        return {
-          id: (customer as any)._id.toString(),
-          email: (customer as any).email,
-          name: (customer as any).name || (customer as any).firstName + ' ' + (customer as any).lastName,
-          role: 'customer',
-          isAdmin: false,
         }
       },
     }),
@@ -169,7 +82,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.id = user.id
         token.role = (user as any).role
-        token.isAdmin = (user as any).isAdmin
+        token.medusaToken = (user as any).token
       }
       return token
     },
@@ -177,7 +90,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as string
-        session.user.isAdmin = token.isAdmin as boolean
+        ;(session as any).medusaToken = token.medusaToken
       }
       return session
     },

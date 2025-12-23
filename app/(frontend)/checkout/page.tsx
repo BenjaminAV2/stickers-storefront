@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { ShoppingBag, Loader2, Check, MapPin, Truck, CreditCard } from 'lucide-react'
 import { CheckoutProvider, useCheckout } from '@/contexts/CheckoutContext'
 import { OrderSummary } from '@/components/checkout/OrderSummary'
 import { ShippingMethodSelector } from '@/components/checkout/ShippingMethodSelector'
 import { PaymentSelector } from '@/components/checkout/PaymentSelector'
-import type { ShippingAddress, ShippingProvider, PaymentProvider } from '@/lib/types/checkout'
+import { PromoCodeInput } from '@/components/checkout/PromoCodeInput'
+import { useMedusaCart } from '@/hooks/useMedusaCart'
+import type { ShippingAddress, ShippingProvider, PaymentProvider, AppliedPromotion } from '@/lib/types/checkout'
 
 const PROGRESS_STEPS = [
   { id: 'address', title: 'Adresse', icon: MapPin },
@@ -39,6 +41,23 @@ function CheckoutContent() {
 
   const router = useRouter()
   const [processing, setProcessing] = useState(false)
+  const [cartReady, setCartReady] = useState(false)
+  const [addressSynced, setAddressSynced] = useState(false)
+  const [appliedPromotions, setAppliedPromotions] = useState<AppliedPromotion[]>([])
+
+  // Medusa cart management
+  const {
+    cart,
+    cartId,
+    loading: cartLoading,
+    error: cartError,
+    createCart,
+    updateShippingAddress: updateMedusaAddress,
+    addShippingMethod,
+    initializePayment,
+    completeCart,
+    updateCartState,
+  } = useMedusaCart()
 
   // Form data
   const [formData, setFormData] = useState<ShippingAddress>({
@@ -61,6 +80,17 @@ function CheckoutContent() {
   const shippingRef = useRef<HTMLDivElement>(null)
   const paymentRef = useRef<HTMLDivElement>(null)
 
+  // Initialize cart on mount
+  useEffect(() => {
+    const initCart = async () => {
+      if (!cartId) {
+        await createCart()
+      }
+      setCartReady(true)
+    }
+    initCart()
+  }, [cartId, createCart])
+
   // Check if address is complete
   const isAddressComplete = () => {
     return (
@@ -74,6 +104,13 @@ function CheckoutContent() {
       formData.phone.trim() !== ''
     )
   }
+
+  // Update Medusa cart when address is complete
+  const syncAddressToCart = useCallback(async () => {
+    if (isAddressComplete() && cartId) {
+      await updateMedusaAddress(formData)
+    }
+  }, [formData, cartId, updateMedusaAddress])
 
   // Calculate current progress based on completion
   const getCurrentSection = () => {
@@ -115,13 +152,14 @@ function CheckoutContent() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const newFormData = { ...formData, [name]: value }
+    setFormData(newFormData)
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }))
     }
 
     // Auto-save to context
-    setShippingAddress({ ...formData, [name]: value })
+    setShippingAddress(newFormData)
 
     // Reset shipping selection when address changes (excluding optional fields)
     const addressFields = ['email', 'firstName', 'lastName', 'address1', 'city', 'postalCode', 'countryCode', 'phone']
@@ -130,8 +168,37 @@ function CheckoutContent() {
     }
   }
 
-  const handleShippingSelect = (provider: ShippingProvider) => {
+  // Debounced sync to Medusa when address is complete
+  const addressSyncTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  useEffect(() => {
+    if (addressSyncTimeoutRef.current) {
+      clearTimeout(addressSyncTimeoutRef.current)
+    }
+    if (isAddressComplete() && cartId) {
+      addressSyncTimeoutRef.current = setTimeout(async () => {
+        const result = await updateMedusaAddress(formData)
+        if (result) {
+          setAddressSynced(true)
+        }
+      }, 500)
+    } else {
+      setAddressSynced(false)
+    }
+    return () => {
+      if (addressSyncTimeoutRef.current) {
+        clearTimeout(addressSyncTimeoutRef.current)
+      }
+    }
+  }, [formData, cartId])
+
+  const handleShippingSelect = async (provider: ShippingProvider) => {
     setSelectedShippingProvider(provider)
+
+    // Add shipping method to Medusa cart
+    if (cartId) {
+      await addShippingMethod(provider.id)
+    }
+
     // Scroll to payment section
     paymentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
@@ -151,18 +218,35 @@ function CheckoutContent() {
       return
     }
 
+    if (!cartId) {
+      console.error('No cart ID found')
+      return
+    }
+
     setPaymentMethod(method)
     setProcessing(true)
 
     try {
-      console.log('Processing payment with:', {
+      console.log('Processing payment with Medusa:', {
         method,
+        cartId,
         address: formData,
         shipping: state.selectedShippingProvider,
       })
 
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-      router.push('/checkout/success')
+      // Initialize payment sessions in Medusa
+      await initializePayment()
+
+      // For now, complete the cart (in production, you'd integrate Stripe here)
+      // TODO: Integrate actual Stripe payment flow
+      const result = await completeCart()
+
+      if (result && result.type === 'order') {
+        // Order created successfully
+        router.push(`/checkout/success?order_id=${result.order.id}`)
+      } else {
+        throw new Error('Failed to complete order')
+      }
     } catch (error) {
       console.error('Payment error:', error)
       router.push('/checkout/failure')
@@ -509,6 +593,7 @@ function CheckoutContent() {
                 </div>
               )}
               <ShippingMethodSelector
+                cartId={addressSynced ? cartId : null}
                 countryCode={formData.countryCode}
                 postalCode={formData.postalCode}
                 selectedProvider={state.selectedShippingProvider}
@@ -519,6 +604,20 @@ function CheckoutContent() {
             {/* Payment Section */}
             <div ref={paymentRef} className="bg-white rounded-2xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4">3. Paiement</h2>
+
+              {/* Promo Code Input - Above payment methods */}
+              <div className="mb-6">
+                <PromoCodeInput
+                  appliedPromotions={appliedPromotions}
+                  onPromoApplied={(promotion) => {
+                    setAppliedPromotions((prev) => [...prev, promotion])
+                  }}
+                  onPromoRemoved={(promoId) => {
+                    setAppliedPromotions((prev) => prev.filter((p) => p.id !== promoId))
+                  }}
+                />
+              </div>
+
               <PaymentSelector
                 selectedMethod={state.paymentMethod}
                 onSelect={handlePaymentSubmit}
@@ -527,13 +626,19 @@ function CheckoutContent() {
 
             {/* Order Summary - Mobile only */}
             <div className="lg:hidden">
-              <OrderSummary selectedShipping={state.selectedShippingProvider} />
+              <OrderSummary
+                selectedShipping={state.selectedShippingProvider}
+                appliedPromotions={appliedPromotions}
+              />
             </div>
           </div>
 
           {/* Right column - Order Summary (Desktop only) */}
           <div className="hidden lg:block">
-            <OrderSummary selectedShipping={state.selectedShippingProvider} />
+            <OrderSummary
+              selectedShipping={state.selectedShippingProvider}
+              appliedPromotions={appliedPromotions}
+            />
           </div>
         </div>
 

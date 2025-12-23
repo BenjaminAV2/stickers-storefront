@@ -4,33 +4,19 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
+    "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "sync:orders": "tsx scripts/sync-medusa-orders.ts",
-    "generate:payload-types": "payload generate:types"
+    "lint": "eslint"
   },
   "dependencies": {
-    "@auth/mongodb-adapter": "^3.11.1",
     "@hookform/resolvers": "^5.2.2",
-    "@payloadcms/db-mongodb": "^3.65.0",
-    "@payloadcms/next": "^3.63.0",
-    "@payloadcms/richtext-lexical": "^3.63.0",
     "@react-pdf/renderer": "^4.3.1",
-    "@types/jsonwebtoken": "^9.0.10",
-    "bcrypt": "^6.0.0",
-    "bcryptjs": "^3.0.3",
     "date-fns": "^4.1.0",
-    "dotenv": "^17.2.3",
-    "graphql": "^16.12.0",
-    "jsonwebtoken": "^9.0.2",
     "jspdf": "^3.0.4",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.553.0",
-    "mongodb": "^7.0.0",
     "next": "^16.0.10",
     "next-auth": "^5.0.0-beta.30",
-    "payload": "^3.63.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-hook-form": "^7.66.1",
@@ -41,14 +27,12 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/bcrypt": "^6.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
     "tailwindcss": "^4",
-    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }
