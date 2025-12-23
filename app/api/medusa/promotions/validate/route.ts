@@ -33,7 +33,15 @@ async function getAdminToken(): Promise<string | null> {
     return adminToken
   }
 
+  // Check if credentials are configured
+  if (!MEDUSA_ADMIN_PASSWORD) {
+    console.error('[API] MEDUSA_ADMIN_PASSWORD not configured')
+    return null
+  }
+
   try {
+    console.log('[API] Attempting admin auth to:', MEDUSA_API_URL)
+
     const response = await fetch(`${MEDUSA_API_URL}/auth/user/emailpass`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -44,7 +52,8 @@ async function getAdminToken(): Promise<string | null> {
     })
 
     if (!response.ok) {
-      console.error('[API] Admin auth failed:', response.status)
+      const text = await response.text()
+      console.error('[API] Admin auth failed:', response.status, text)
       return null
     }
 
@@ -52,6 +61,7 @@ async function getAdminToken(): Promise<string | null> {
     adminToken = data.token
     // Token valid for 1 hour
     tokenExpiry = Date.now() + 55 * 60 * 1000
+    console.log('[API] Admin token obtained successfully')
     return adminToken
   } catch (error) {
     console.error('[API] Error getting admin token:', error)
