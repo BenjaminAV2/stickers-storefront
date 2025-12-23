@@ -86,8 +86,13 @@ export async function POST(request: NextRequest) {
     // Get admin token to fetch promotions
     const token = await getAdminToken()
     if (!token) {
+      const hasPassword = !!MEDUSA_ADMIN_PASSWORD
       return NextResponse.json(
-        { success: false, error: 'Erreur de connexion au serveur' },
+        {
+          success: false,
+          error: 'Erreur de connexion au serveur',
+          debug: { hasPassword, email: MEDUSA_ADMIN_EMAIL, apiUrl: MEDUSA_API_URL }
+        },
         { status: 500 }
       )
     }
