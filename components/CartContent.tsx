@@ -3,6 +3,7 @@
 import { useCart } from '@/contexts/CartContext'
 import CartItem from '@/components/CartItem'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { ShoppingBag, ArrowLeft, ArrowRight, Trash2, Upload } from 'lucide-react'
 import { useState } from 'react'
 import StickyCheckoutButton from './StickyCheckoutButton'
@@ -10,13 +11,14 @@ import StickyCheckoutButton from './StickyCheckoutButton'
 export default function CartContent() {
   const { items, removeItem, clearCart, totalItems, totalCents } = useCart()
   const [showClearConfirm, setShowClearConfirm] = useState(false)
+  const router = useRouter()
 
   const formatPrice = (cents: number) => {
     return (cents / 100).toFixed(2) + ' €'
   }
 
   const handleCheckout = () => {
-    alert('Fonctionnalité checkout à venir')
+    router.push('/checkout')
   }
 
   // Empty cart state

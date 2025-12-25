@@ -2,14 +2,16 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { ShoppingBag, Loader2, Check, MapPin, Truck, CreditCard } from 'lucide-react'
+import { ShoppingBag, Loader2, Check, MapPin, Truck, CreditCard, Gift } from 'lucide-react'
 import { CheckoutProvider, useCheckout } from '@/contexts/CheckoutContext'
+import { useCart } from '@/contexts/CartContext'
 import { OrderSummary } from '@/components/checkout/OrderSummary'
 import { ShippingMethodSelector } from '@/components/checkout/ShippingMethodSelector'
 import { PaymentSelector } from '@/components/checkout/PaymentSelector'
 import { PromoCodeInput } from '@/components/checkout/PromoCodeInput'
 import { useMedusaCart } from '@/hooks/useMedusaCart'
 import type { ShippingAddress, ShippingProvider, PaymentProvider, AppliedPromotion } from '@/lib/types/checkout'
+import { calculatePromoDiscount } from '@/lib/types/checkout'
 
 const PROGRESS_STEPS = [
   { id: 'address', title: 'Adresse', icon: MapPin },
@@ -39,11 +41,15 @@ function CheckoutContent() {
     setPaymentMethod,
   } = useCheckout()
 
+  // Get cart items for order creation
+  const { items: cartItems, totalCents: cartTotalCents, clearCart } = useCart()
+
   const router = useRouter()
   const [processing, setProcessing] = useState(false)
   const [cartReady, setCartReady] = useState(false)
   const [addressSynced, setAddressSynced] = useState(false)
   const [appliedPromotions, setAppliedPromotions] = useState<AppliedPromotion[]>([])
+  const [orderError, setOrderError] = useState<string | null>(null)
 
   // Medusa cart management
   const {
@@ -79,6 +85,27 @@ function CheckoutContent() {
   const addressRef = useRef<HTMLDivElement>(null)
   const shippingRef = useRef<HTMLDivElement>(null)
   const paymentRef = useRef<HTMLDivElement>(null)
+
+  // Calculate final total with shipping and discounts (same logic as OrderSummary)
+  const shippingCostCents = state.selectedShippingProvider?.price
+    ? Math.round(state.selectedShippingProvider.price * 100)
+    : 0
+  const discountTotalCents = appliedPromotions.reduce((total, promo) => {
+    return total + calculatePromoDiscount(promo, cartTotalCents, shippingCostCents)
+  }, 0)
+  const finalTotalCents = Math.max(0, cartTotalCents + shippingCostCents - discountTotalCents)
+  const isFreeOrder = finalTotalCents === 0 && cartItems.length > 0
+
+  // Debug logging for free order detection
+  console.log('[Checkout] Free order check:', {
+    cartItemsCount: cartItems.length,
+    cartTotalCents,
+    shippingCostCents,
+    discountTotalCents,
+    finalTotalCents,
+    isFreeOrder,
+    promotions: appliedPromotions.map(p => p.code),
+  })
 
   // Initialize cart on mount
   useEffect(() => {
@@ -201,6 +228,124 @@ function CheckoutContent() {
 
     // Scroll to payment section
     paymentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  // Handle free order submission (when total is 0 after promotions)
+  const handleFreeOrderSubmit = async () => {
+    // Reset errors
+    setShippingError(false)
+    setOrderError(null)
+
+    // Debug logging
+    console.log('[Checkout] Free order submission attempt:', {
+      cartItems: cartItems.length,
+      hasShipping: !!state.selectedShippingProvider,
+      finalTotal: finalTotalCents,
+      promotions: appliedPromotions.length,
+    })
+
+    if (!validateAddress()) {
+      setOrderError('Veuillez remplir tous les champs de l\'adresse')
+      addressRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+
+    if (!state.selectedShippingProvider) {
+      setOrderError('Veuillez sélectionner un mode de livraison')
+      setShippingError(true)
+      shippingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+
+    if (cartItems.length === 0) {
+      setOrderError('Votre panier est vide')
+      return
+    }
+
+    setProcessing(true)
+
+    try {
+      console.log('Creating free order via custom API:', {
+        items: cartItems,
+        address: formData,
+        shipping: state.selectedShippingProvider,
+        promotions: appliedPromotions,
+      })
+
+      // Calculate TVA (20%)
+      const tvaRate = 0.20
+      const subtotalHT = cartTotalCents / (1 + tvaRate)
+      const tvaAmount = cartTotalCents - subtotalHT
+
+      // Build request payload for the order creation API
+      const orderPayload = {
+        items: cartItems.map((item) => ({
+          title: item.title,
+          quantity: item.quantity,
+          unitCents: item.unitCents,
+          totalCents: item.totalCents,
+          support: item.support,
+          shape: item.shape,
+          widthCm: item.widthCm,
+          heightCm: item.heightCm,
+          diameterCm: item.diameterCm,
+        })),
+        shippingAddress: formData,
+        // Shipping method details
+        shippingMethod: {
+          id: state.selectedShippingProvider.id,
+          title: state.selectedShippingProvider.title,
+          priceCents: shippingCostCents,
+          priceEur: shippingCostCents / 100,
+          estimatedDelivery: state.selectedShippingProvider.estimatedDelivery,
+        },
+        appliedPromotions: appliedPromotions,
+        // Price breakdown in cents
+        pricing: {
+          subtotalTTC: cartTotalCents,
+          subtotalHT: Math.round(subtotalHT),
+          tva: Math.round(tvaAmount),
+          tvaRate: 20,
+          shipping: shippingCostCents,
+          discount: discountTotalCents,
+          total: finalTotalCents,
+        },
+        // Price breakdown in EUR for display
+        pricingEur: {
+          subtotalTTC: cartTotalCents / 100,
+          subtotalHT: Math.round(subtotalHT) / 100,
+          tva: Math.round(tvaAmount) / 100,
+          shipping: shippingCostCents / 100,
+          discount: discountTotalCents / 100,
+          total: finalTotalCents / 100,
+        },
+      }
+
+      const response = await fetch('/api/orders/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Erreur lors de la création de la commande')
+      }
+
+      console.log('Order created successfully:', data.order)
+
+      // Clear the cart
+      clearCart()
+
+      // Redirect to success page
+      router.push(`/checkout/success?order_id=${data.order.id}&display_id=${data.order.display_id}`)
+    } catch (error) {
+      console.error('Free order error:', error)
+      setOrderError(error instanceof Error ? error.message : 'Erreur lors de la création de la commande')
+    } finally {
+      setProcessing(false)
+    }
   }
 
   const handlePaymentSubmit = async (method: PaymentProvider) => {
@@ -618,10 +763,55 @@ function CheckoutContent() {
                 />
               </div>
 
-              <PaymentSelector
-                selectedMethod={state.paymentMethod}
-                onSelect={handlePaymentSubmit}
-              />
+              {/* Order Error Display */}
+              {orderError && (
+                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-800 text-sm font-medium">{orderError}</p>
+                </div>
+              )}
+
+              {/* Free Order - No payment required */}
+              {isFreeOrder ? (
+                <div className="space-y-4">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                        <Gift className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-green-800">Commande gratuite</p>
+                        <p className="text-sm text-green-700">
+                          Votre commande est à 0,00 € grâce à vos codes promo. Aucun paiement requis.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleFreeOrderSubmit}
+                    disabled={processing}
+                    className="w-full px-6 py-4 rounded-lg font-medium transition-colors shadow-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {processing ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Création de la commande...
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-5 h-5" />
+                        Confirmer la commande gratuite
+                      </>
+                    )}
+                  </button>
+                </div>
+              ) : (
+                <PaymentSelector
+                  selectedMethod={state.paymentMethod}
+                  onSelect={handlePaymentSubmit}
+                />
+              )}
             </div>
 
             {/* Order Summary - Mobile only */}

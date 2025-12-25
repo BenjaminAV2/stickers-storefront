@@ -1,9 +1,15 @@
 'use client'
 
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { CheckCircle, Package, Mail } from 'lucide-react'
 
-export default function CheckoutSuccessPage() {
+function SuccessContent() {
+  const searchParams = useSearchParams()
+  const orderId = searchParams.get('order_id')
+  const displayId = searchParams.get('display_id')
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
       <div className="max-w-md w-full">
@@ -17,6 +23,15 @@ export default function CheckoutSuccessPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Commande confirmée !
           </h1>
+
+          {/* Order Number */}
+          {displayId && (
+            <div className="bg-gray-100 rounded-lg px-4 py-3 mb-4 inline-block">
+              <p className="text-sm text-gray-600">Numéro de commande</p>
+              <p className="text-xl font-bold text-gray-900">#{displayId}</p>
+            </div>
+          )}
+
           <p className="text-gray-600 mb-8">
             Merci pour votre achat. Nous avons bien reçu votre commande et nous la préparons avec
             soin.
@@ -75,5 +90,17 @@ export default function CheckoutSuccessPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-pulse text-gray-400">Chargement...</div>
+      </div>
+    }>
+      <SuccessContent />
+    </Suspense>
   )
 }
