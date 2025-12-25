@@ -12,6 +12,9 @@ const MEDUSA_API_URL = process.env.NEXT_PUBLIC_MEDUSA_API_URL || 'https://backen
 const MEDUSA_ADMIN_EMAIL = process.env.MEDUSA_ADMIN_EMAIL || ''
 const MEDUSA_ADMIN_PASSWORD = process.env.MEDUSA_ADMIN_PASSWORD || ''
 
+// Default shipping option ID (Standard à Domicile) as fallback
+const DEFAULT_SHIPPING_OPTION_ID = 'so_01KCH49520VEZ6K46YS39JERY0'
+
 // Cache admin token
 let adminToken: string | null = null
 let tokenExpiry: number = 0
@@ -335,6 +338,18 @@ export async function POST(request: NextRequest) {
     if (salesChannel) {
       draftOrderPayload.sales_channel_id = salesChannel.id
     }
+
+    // Add shipping_methods with the Medusa shipping option ID
+    // This is REQUIRED for draft order conversion to work
+    // The shippingMethod.id from frontend is already the Medusa option ID (so_xxx)
+    const shippingOptionId = body.shippingMethod.id.startsWith('so_')
+      ? body.shippingMethod.id
+      : DEFAULT_SHIPPING_OPTION_ID
+
+    draftOrderPayload.shipping_methods = [{
+      option_id: shippingOptionId,
+      price: Math.round(body.shippingMethod.priceCents), // Price in cents
+    }]
 
     console.log('[API] Creating draft order:', JSON.stringify(draftOrderPayload, null, 2))
 
