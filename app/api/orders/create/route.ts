@@ -359,68 +359,27 @@ export async function POST(request: NextRequest) {
 
     const draftOrder = draftOrderData.draft_order
 
-    // For free orders (total = 0), we can convert the draft order to a real order
+    // For free orders (total = 0), return as draft order ready for merchant review
+    // Note: Automatic conversion is not supported for custom items without variant_id
+    // The merchant should review and process these orders manually from the admin
     if (body.pricing.total === 0) {
-      console.log('[API] Free order - converting draft order to order...')
-
-      // Convert draft order to a real order using Medusa V2 endpoint
-      const convertResponse = await fetch(
-        `${MEDUSA_API_URL}/admin/draft-orders/${draftOrder.id}/convert-to-order`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({}),
-        }
-      )
-
-      // Check if response is HTML (error page) or JSON
-      const contentType = convertResponse.headers.get('content-type') || ''
-      if (!contentType.includes('application/json')) {
-        console.error('[API] Draft order conversion returned non-JSON response:', convertResponse.status)
-        // Return the draft order as pending payment, it can be converted later from admin
-        return NextResponse.json({
-          success: true,
-          order: {
-            id: draftOrder.id,
-            display_id: draftOrder.display_id,
-            status: 'pending_payment',
-            type: 'draft_order',
-          },
-          message: 'Commande créée - en attente de traitement',
-        })
-      }
-
-      const convertData = await convertResponse.json()
-
-      if (!convertResponse.ok) {
-        console.error('[API] Draft order conversion failed:', convertData)
-        // Return success with pending payment status
-        // The merchant can convert it to a real order from the admin
-        return NextResponse.json({
-          success: true,
-          order: {
-            id: draftOrder.id,
-            display_id: draftOrder.display_id,
-            status: 'pending_payment',
-            type: 'draft_order',
-          },
-          message: 'Commande créée - en attente de traitement',
-        })
-      }
-
-      console.log('[API] Draft order converted successfully:', convertData)
+      console.log('[API] Free order created as draft - ready for merchant review')
+      console.log('[API] Draft order details:', {
+        id: draftOrder.id,
+        display_id: draftOrder.display_id,
+        email: body.shippingAddress.email,
+        total: body.pricingEur.total,
+      })
 
       return NextResponse.json({
         success: true,
         order: {
-          id: convertData.order?.id || draftOrder.id,
-          display_id: convertData.order?.display_id || draftOrder.display_id,
-          status: 'completed',
-          type: 'order',
+          id: draftOrder.id,
+          display_id: draftOrder.display_id,
+          status: 'pending_review',
+          type: 'draft_order',
         },
+        message: 'Commande gratuite créée - en attente de validation',
       })
     }
 
