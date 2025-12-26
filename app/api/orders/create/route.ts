@@ -347,8 +347,9 @@ export async function POST(request: NextRequest) {
       : DEFAULT_SHIPPING_OPTION_ID
 
     draftOrderPayload.shipping_methods = [{
-      option_id: shippingOptionId,
-      price: Math.round(body.shippingMethod.priceCents), // Price in cents
+      shipping_option_id: shippingOptionId,
+      name: body.shippingMethod.title,
+      amount: Math.round(body.shippingMethod.priceCents), // Price in cents
     }]
 
     console.log('[API] Creating draft order:', JSON.stringify(draftOrderPayload, null, 2))
